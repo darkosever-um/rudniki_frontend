@@ -1,11 +1,12 @@
-import logo from './logo.svg';
 import './App.css';
 import Maps from './modules/Maps'; 
+import OurButton from './components/OurButton';
 
 function App() {
   return (
     <div className="App">
-      <Maps></Maps>
+      <OurButton text={"test"} onClickDo={() => alert('Button clicked!')} variant='blue'/>
+      <Maps mines={[{ ime: 'Rudnik Trbovlje', lat: 46.154, lon: 15.049 },{ ime: 'Rudnik Velenje', lat: 46.362, lon: 15.110 }]}></Maps>
     </div>
   );
 }
