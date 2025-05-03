@@ -11,3 +11,4 @@ Projekt runiki
 - Moduli:
     - ```npm install @react-google-maps/api```
     - ```npm install -D tailwindcss@3.4.3 postcss autoprefixer```
+    - ```npm install @mui/icons-material @mui/material @emotion/react @emotion/styled```
