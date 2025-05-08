@@ -1,9 +1,9 @@
 import React from 'react';
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 
 const containerStyle = {
   width: '100%',
-  height: '100vh'
+  height: '100vh',
 };
 
 const center = {
@@ -19,7 +19,7 @@ const options = {
     fullscreenControl: false,
   };
 
-function Maps() {
+function Maps({ mines }) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY
   });
@@ -32,7 +32,15 @@ function Maps() {
       center={center}
       zoom={8}
       options={options}
-    />
+    >
+        {mines.map((mine, index) => (
+        <Marker
+          key={index}
+          position={{ lat: mine.lat, lng: mine.lon }}
+          title={mine.ime}
+        />
+      ))}
+    </GoogleMap>
   );
 }
 
