@@ -3,6 +3,7 @@ import OurButton from '../components/OurButton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
+import OurSearch from '../components/OurSearch';
 
 function Nav() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -33,6 +34,10 @@ function Nav() {
         <>
           <div className="fixed top-0 left-0 h-full w-64 bg-white shadow-md z-20 flex flex-col justify-between p-4">
             <div>
+              <div>
+                <OurSearch></OurSearch>
+              </div>
+              
               <span className="text-xs opacity-30 font-bold mb-4">ORODJA</span>
               <ul className="space-y-2">
                 <li><a href="/zemljevid" className="block hover:underline">Zemljevid</a></li>
