@@ -1,6 +1,6 @@
 import React from 'react';
 
-function OurButton({ text, onClickDo, variant = 'gray', classNameProps = '' }) {
+function OurButton({ text, onClickDo, variant = 'gray', classNameProps = '', type = '' }) {
   const baseStyles = "px-5 py-2 text-base font-medium rounded-3xl transition-colors";
 
   let buttonStyles = "";
@@ -22,6 +22,7 @@ function OurButton({ text, onClickDo, variant = 'gray', classNameProps = '' }) {
     <button
       onClick={onClickDo}
       className={`${baseStyles} ${buttonStyles} ${classNameProps}`}
+      {...(type !== "" ? { type } : {})}
     >
       {text}
     </button>
