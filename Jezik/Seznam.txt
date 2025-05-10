@@ -1,0 +1,101 @@
+Vrste rudnikov:
+
+1. Površinski rudnik
+   a) Strip mining (površinsko rudarjenje)
+      PROSTORI:
+         - strips (trak)
+         - pits (jama – lahko active ali inactive)
+         - spoil pit (jama z “odpadki”)
+      STROJI:
+         - dragline excavator
+         - continuous excavator
+         - hydraulic mining shovel
+
+   b) Open pit mining (odprto rudarjenje)
+      PROSTORI:
+         - haul road
+         - waste dump
+         - bench
+      STROJI:
+         - rotary drill (za vrtanje blasting holes)
+         - dust suppression systems
+         - drill mounter
+
+   c) Mountaintop removal mining (rudarjenje z odstranjevanjem gorskih vrhov)
+      PROSTORI:
+         - coal slurry
+         - storage
+      STROJI:
+         - dragline excavator
+
+2. Podzemni rudnik
+   PROSTORI:
+      - tunel
+      - mine shaft
+      - processing plant
+      - ore elevator
+      - human elevator
+      - ore beds
+   STROJI:
+      - crane lifts
+      - continuous miners
+      - drones
+      - jumbo drills
+      - loaders
+      - haulers
+      - longwall mining machines
+      - rock dusters
+      - roof bolters
+      - scoops
+      - shotcrete machines
+
+3. Rudarjenje na mestu
+   PROSTORI:
+      - river
+      - pit
+      - washing plant
+      - odlagališče
+   STROJI:
+      - ore wash plant
+      - derocker
+      - sluice boxes
+      - trommels
+
+4. In situ mining (rudarjenje na kraju samem)
+   PROSTORI:
+      - monitoring well
+      - injection well
+      - recovery well
+      - processing facility
+   STROJI:
+      - (ni navedenih strojev)
+
+5. Globokomorsko rudarjenje (deep sea mining)
+   PROSTORI:
+      - mining platform
+      - pump
+      - riser (podobno conveyor belt)
+   STROJI:
+      - transport ship
+      - mining vehicle
+
+Dodatni stroji:
+   - Mine drone
+   - Crusher
+   - Conveyor belt
+   - Drill rig
+   - Loader
+   - Haulage truck
+   - Truck
+   - Bulldozer
+   - Wheel loaders
+   - Water trucks
+
+
+Primer:
+   rudnik "tesni_rudni"{
+      "underground" {
+          "sekcija1-2" [(x1, y1), (x2,y2)....],
+          "dvigalo3" "human" (x1,y1), //ali "human" (x1,y1)
+      }
+   }
