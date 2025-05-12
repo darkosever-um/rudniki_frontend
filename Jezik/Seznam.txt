@@ -94,8 +94,8 @@ Dodatni stroji:
 
 Primer:
    rudnik "tesni_rudni"{
-      "underground" {
-          "sekcija1-2" [(x1, y1), (x2,y2)....],
-          "dvigalo3" "human" (x1,y1), //ali "human" (x1,y1)
-      }
+      "underground" [
+          {"sekcija1-2" [(x1, y1), (x2,y2)....]},
+          {"dvigalo3" "human" (x1,y1), //ali "human" (x1,y1)}
+      ]
    }

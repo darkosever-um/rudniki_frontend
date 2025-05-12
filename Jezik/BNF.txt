@@ -1,0 +1,87 @@
+------------
+/* osnova */
+------------
+Begin ::= Start | CommandSet | Expr | Function;
+
+Start ::= STRING '{' Minetype '}';
+Minetype ::= SURFACE '{' Mine '}' | UNDERGROUND '{' Mine '}' | IN_PLACE '{' Mine '}' | IN_SITU '{' Mine '}' | DEEP_SEA '{' Mine '}';
+Mine ::= '[' Landelements ']' | '[' Undergroundelements ']' | '[' Seaelements ']';
+
+--------------------
+/* tipi rudnikov  */
+--------------------
+Landelements ::= Strip Landelements' | Bench Landelements' | Spoilpit Landelements' | Landpath Landelements' | River Landelements' | Plant Landelements' | Well Landelements';
+Landelements' ::= ',' Strip | ',' Bench | ',' Spoilpit | ',' Path | ',' River | ',' Plant | ',' Well | ε;
+
+Undergroundelements ::= Tunnel | Shaft | Plant | Elevator | Orebed;
+Undergroundelements' ::= ',' Tunnel | ',' Shaft | ',' Plant | ',' Elevator | ',' Orebed | ε;
+
+Seaelements ::= Platform | Pump | Riser | Seapath;
+Seaelements' ::= ',' Platform | ',' Pump | ',' Riser | ',' Path | ε;
+
+--------------------
+/* tipi elementov */
+--------------------
+Strip ::= '{' STRING Arbitarraypolygon '}' | '{' STRING Box '}';
+Bench ::= '{' STRING Arbitarraypolygon '}';
+Spoilpit ::= '{' STRING Arbitarraypolygon '}';
+Path ::= '[' STRING Polyline Lines ']' | '[' STRING Line Lines ']' | '[' STRING Bend Lines ']';
+River ::= '[' STRING Polyline Lines ']' | '[' STRING Line Lines ']' | '[' STRING Bend Lines ']';
+Plant ::= '{' STRING Arbitarraypolygon '}' | '{' STRING Box '}' | '{' STRING Circ '}';
+Well ::= '{' WELLTYPE Point '}';
+
+Tunnel ::= '[' STRING Polyline Lines ']' | '[' STRING Line Lines ']' | '[' STRING Bend Lines ']';
+Shaft ::= '[' STRING Polyline Lines ']' | '[' STRING Line Lines ']' | '[' STRING Bend Lines ']';
+Elevator ::= '{' STRING ELEVATORTYPE | Point '}';
+Orebed ::= '{' STRING Arbitarraypolygon '}' | '{' STRING Box '}' | '{' STRING Circ '}';
+
+Platform ::= '{' STRING Arbitarraypolygon '}' | '{' STRING Box '}' | '{' STRING Circ '}';
+Pump ::= '{' STRING Point '}';
+Riser ::= '{' STRING Point '}';
+
+---------------
+/* specifika */
+---------------
+DOUBLE ::= Bitwise | FunctionCall;
+
+Lines ::= ',' '{' STRING Polyline '}' Lines | ',' '{' STRING Line '}' Lines | ',' '{' STRING Bend '}' Lines | ε;
+Arbitarraypolygon ::= '(' '[' Points ']' ')';
+Polyline ::= '(' '[' Points ']' ')';
+Line ::= '(' Point ',' Point ')';
+Box ::= '(' Point ',' Point ')';
+Points ::= Point Points';
+Points' ::= ',' Point Points' | ε;
+Point ::= '(' DOUBLE ',' DOUBLE ')';
+Bend ::= '(' Point ',' Point ',' DOUBLE ')';
+Circ ::= '(' Point ',' DOUBLE ')';
+
+----------
+/* tipi */
+----------
+PLANTTYPE ::= washing | procesing | storage;
+WELLTYPE ::= monitoring | injection | recovery;
+ELEVATORTYPE ::= human | ore;
+
+------------
+/* iz vaj */
+------------
+Expr ::= Bitwise;
+Bitwise ::= Additive Bitwise';
+Bitwise' ::= bwand Additive Bitwise' | bwor Additive Bitwise' | ε;
+Additive ::= Multiplicative Additive';
+Additive' ::= plus Multiplicative Additive' | minus Multiplicative Additive' | ε;
+Multiplicative ::= Unary Multiplicative';
+Multiplicative' ::= times Unary Multiplicative' | divide Unary Multiplicative' | ε;
+Unary ::= plus Primary | minus Primary | Primary;
+Primary ::= int | hex | variable | '(' Bitwise ')';
+
+CommandSet ::= Command CommandSet | ε;
+Command ::= Loop | Assign | Print;
+Loop ::= "for" '(' Assign to Bitwise ')' "begin" Bitwise "end;";
+Assign ::= variable ":=" Bitwise ";" | variable ":=" FunctionCall ";";
+Print ::= "CONSOLE" Bitwise ";";
+
+Function ::= FUNNAME "(" Atribute ")" "{ Begin return DOUBLE "}"
+Atribute ::= int Atribute'| hex Atribute'| variable Atribute'
+Atribute' ::= "," int Atribute'| "," hex Atribute'| "," variable Atribute' | ε
+FunctionCall ::= FUNNAME "(" Atribute ")"
