@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from "react-router-dom";
 import OurButton from '../components/OurButton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -25,7 +26,9 @@ function Nav() {
         </button>
         <div className="flex items-center gap-4">
           <button className="text-2xl" aria-label="Nastavitve"><SettingsIcon/></button>
-          <button className="text-2xl" aria-label="Profil"><AccountCircleIcon/></button>
+          <button className="text-2xl" aria-label="Profil">
+            <Link className="block hover:underline" to='/login'><AccountCircleIcon/></Link>
+          </button>
         </div>
       </div>
       
@@ -40,7 +43,7 @@ function Nav() {
               
               <span className="text-xs opacity-30 font-bold mb-4">ORODJA</span>
               <ul className="space-y-2">
-                <li><a href="/zemljevid" className="block hover:underline">Zemljevid</a></li>
+                <li><Link className="block hover:underline" to='/'>Zemljevid</Link></li>
                 <li><a href="/rudniki" className="block hover:underline">Rudniki</a></li>
                 <li><a href="/statistika" className="block hover:underline">Statistika rudnikov</a></li>
               </ul>
