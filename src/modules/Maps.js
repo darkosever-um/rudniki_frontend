@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, Circle, InfoWindow } from '@react-google-maps/api';
 import proj4 from 'proj4';
 import OurModal from '../components/OurModal';
 import OurButton from '../components/OurButton';
@@ -49,6 +49,9 @@ function Maps() {
     libraries: ['drawing'],
   });
 
+  // mapa info
+  const [clickedIndex, setClickedIndex] = useState(null);
+
   // Pridobivanje rudnikov
   useEffect(() => {
     const fetchMines = async () => {
@@ -74,9 +77,10 @@ function Maps() {
       drawingManagerRef.current = new window.google.maps.drawing.DrawingManager({
         drawingControl: false,
         polygonOptions: {
-          fillColor: '#ff0000',
-          fillOpacity: 0.2,
-          strokeWeight: 2,
+          fillColor: 'blue',
+          fillOpacity: 0.3,
+          strokeWeight: 1,
+          strokeOpacity: 0.8,
           clickable: false,
           editable: false,
           zIndex: 1,
@@ -95,7 +99,7 @@ function Maps() {
         setPolygonPath(path);
         setIsModalOpen(true);
         //polygon.setMap(null); // Odstrani poligon z zemljevida
-        stopDrawing(); // Prekliči risanje
+        stopDrawing();
       });
     }
 
@@ -103,7 +107,7 @@ function Maps() {
 
     return () => {
       if (drawingManagerRef.current) {
-        drawingManagerRef.current.setMap(null); // Odstrani DrawingManager iz zemljevida
+        drawingManagerRef.current.setMap(null);
         drawingManagerRef.current = null;
       }
     };
@@ -124,23 +128,45 @@ function Maps() {
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
-        zoom={8}
+        zoom={9}
         options={options}
         onLoad={(map) => {
           mapRef.current = map;
         }}
       >
         {mines &&
-          mines.map((mine, index) => {
-            const coords = transformCoords(mine.E, mine.N);
+          mines.map((circle, index) => {
+            const coords = transformCoords(circle.E, circle.N);
             if (!coords) return null;
 
             return (
-              <Marker
-                key={index}
-                position={coords}
-                title={mine.name}
-              />
+              <React.Fragment key={index}>
+                <Circle
+                  center={coords}
+                  radius={500}
+                  options={{
+                    strokeColor: "#000",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 1,
+                    fillColor: "blue",
+                    fillOpacity: 0.2,
+                  }}
+                  onClick={() => setClickedIndex(index)}
+                />
+
+                {clickedIndex === index && (
+                  <InfoWindow
+                    position={coords}
+                    onCloseClick={() => setClickedIndex(null)}
+                  >
+                    <div>
+                      <h3>Ime: <strong>{circle.name}</strong></h3>
+                      <p>Občina: <strong>{circle.municipality}</strong></p>
+                      <p>Status: <strong>{circle.status}</strong></p>
+                    </div>
+                  </InfoWindow>
+                )}
+              </React.Fragment>
             );
           })}
       </GoogleMap>
@@ -262,7 +288,6 @@ function Maps() {
             </div>
           </div>
 
-          {/* skrito polje za koordinate risanja */}
           <input type="hidden" name="geometry" value={JSON.stringify(polygonPath)} />
 
           <div className="flex justify-end gap-2 pt-4">
