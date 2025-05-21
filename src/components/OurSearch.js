@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import axios from "axios"; // Ko de kredi BACKEND
-
+import axios from "axios"; // Ko de kredi BACKEND
 
 function OurSearch() {
   const [query, setQuery] = useState("");
@@ -12,27 +11,26 @@ function OurSearch() {
       return;
     }
 
-    // Ko de kredi BACKEND:
-    /*
     try {
-      const response = await axios.get("http://localhost:3001/api/search", {
+      const response = await axios.get("http://localhost:8080/", { // verjetno: http://localhost:8080/mines/
         params: { q },
       });
-      setResults(response.data);
+      const dataFromBackend = Object.values(response.data);
+      const dataArray = [{ name: `Iskanje za: ${q}` }, ...dataFromBackend];
+      setResults(dataArray);
+      console.log(dataArray)
     } catch (error) {
       console.error("Napaka pri iskanju:", error);
     }
-    */
-
-    // za test
-    setResults([
-      { name: `Iskanje za: ${q}` }
-    ]);
   };
 
 
   useEffect(() => {
-    search(query);
+    const delayDebounce = setTimeout(() => {
+      search(query);
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
   }, [query]);
 
   return (
