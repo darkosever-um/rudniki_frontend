@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleMap, useJsApiLoader, Circle, InfoWindow } from '@react-google-maps/api';
 import proj4 from 'proj4';
-import OurModal from '../components/OurModal';
 import OurButton from '../components/OurButton';
 import DrawIcon from '@mui/icons-material/Draw';
 import EditOffIcon from '@mui/icons-material/EditOff';
+import AddMineModal from './AddMineModal';
+
+const libraries = ['drawing'];
 
 // Za transformacijo točk
 proj4.defs("EPSG:3794", "+proj=tmerc +lat_0=45.1 +lon_0=15 +k=0.9999 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs");
@@ -32,27 +34,26 @@ const options = {
 };
 
 function Maps() {
-
-  // Za rudnike
+  // Hramba rudnikov
   const [mines, setMines] = useState([]);
 
-  // Za riasnje oz. DrawingManager
+  // RISANJE, DrawingManager
   const [drawingMode, setDrawingMode] = useState(null);
   const [polygonPath, setPolygonPath] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const drawingManagerRef = useRef(null);
   const mapRef = useRef(null);
 
-  // Api google zemlejvid
+  // API google zemlejvid
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-    libraries: ['drawing'],
+    libraries,
   });
 
-  // mapa info
+  // MAPA INFO
   const [clickedIndex, setClickedIndex] = useState(null);
 
-  // Pridobivanje rudnikov
+  // FETCH, Pridobivanje rudnikov
   useEffect(() => {
     const fetchMines = async () => {
       try {
@@ -69,7 +70,7 @@ function Maps() {
     fetchMines();
   }, []);
 
-  // DrawingManager
+  // RISANJE, DrawingManager
   useEffect(() => {
     if (!isLoaded || !mapRef.current) return;
 
@@ -112,7 +113,6 @@ function Maps() {
       }
     };
   }, [isLoaded, drawingMode]);
-
   const stopDrawing = () => {
     setDrawingMode(null);
     setPolygonPath([]);
@@ -171,8 +171,36 @@ function Maps() {
           })}
       </GoogleMap>
 
-      <OurButton
+      {/* <OurButton
+        classNameProps="absolute bottom-[25px] right-[25px] z-[1000]"
+        text={"Tipka bre"}
         onClickDo={() => {
+          setDrawingMode('polygon')
+          console.log("Kliknil")
+          console.log(drawingMode == null)
+          console.log(isModalOpen)
+          console.log(polygonPath.length)
+        }}
+      /> */}
+
+
+      
+      <OurButton
+        
+        onClickDo={() => {
+          console.log("Modal je zaprt: "+!isModalOpen)
+          console.log("Rišemo: "+drawingMode != null)
+          console.log("("+polygonPath.length+")Točke narisane: "+polygonPath.length > 0)
+          
+        }}
+        text={"IDE GAS"}
+      />
+
+      <OurButton
+        disabled={(isModalOpen)}
+        
+        onClickDo={() => {
+          console.log(drawingManagerRef)
           if (drawingMode) {
             stopDrawing();
           } else {
@@ -183,7 +211,7 @@ function Maps() {
         text={
           drawingMode ? (
             <span>
-              <EditOffIcon /> Prekliči
+              <EditOffIcon /> Končaj
             </span>
           ) : (
             <span>
@@ -193,124 +221,12 @@ function Maps() {
         }
       />
 
-      <OurModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <form action="http://localhost:8080" method="POST" className="p-6 space-y-4 text-sm">
-          <h2 className="text-xl font-bold mb-4">Dodaj rudnik</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center">
-              <label className="w-36">Ime rudnika:</label>
-              <input name="name" className="flex-1 p-1 bg-gray-100" type="text" required />
-            </div>
-
-            <div className="flex items-center">
-              <label className="w-36">Občina:</label>
-              <input name="municipality" className="flex-1 p-1 bg-gray-100" type="text" />
-            </div>
-
-            <div className="flex items-center">
-              <label className="w-36">Status:</label>
-              <input name="status" className="flex-1 p-1 bg-gray-100" type="text" />
-            </div>
-
-            <div className="flex items-center">
-              <label className="w-36">Način izkopa:</label>
-              <input name="excavationMethod" className="flex-1 p-1 bg-gray-100" type="text" />
-            </div>
-
-            <div className="flex items-center">
-              <label className="w-36">Začetek izkopa:</label>
-              <select name="excavationStart" className="flex-1 p-1 bg-gray-100">
-                {Array.from({ length: 2050 - 1900 + 1 }, (_, i) => 1900 + i).map(year => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex items-center">
-              <label className="w-36">Konec izkopa:</label>
-              <select name="excavationEnd" className="flex-1 p-1 bg-gray-100">
-                {Array.from({ length: 2050 - 1900 + 1 }, (_, i) => 1900 + i).map(year => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex items-center">
-              <label className="w-36">Glavna ruda:</label>
-              <input name="mainOre" className="flex-1 p-1 bg-gray-100" type="text" />
-            </div>
-
-            <div className="flex items-center">
-              <label className="w-36">Stranske rude:</label>
-              <input name="sideOres" className="flex-1 p-1 bg-gray-100" type="text" />
-            </div>
-
-            <div className="flex items-center">
-              <label className="w-36">Mineral:</label>
-              <input name="mineral" className="flex-1 p-1 bg-gray-100" type="text" />
-            </div>
-
-            <div className="flex items-center">
-              <label className="w-36">Raba:</label>
-              <input name="usage" className="flex-1 p-1 bg-gray-100" type="text" />
-            </div>
-
-            <div className="flex items-center">
-              <label className="w-36">Končna uporaba:</label>
-              <input name="endUsage" className="flex-1 p-1 bg-gray-100" type="text" />
-            </div>
-
-            <div className="flex items-center">
-              <label className="w-36">Vrsta kamnine:</label>
-              <input name="rockType" className="flex-1 p-1 bg-gray-100" type="text" />
-            </div>
-
-            <div className="col-span-2">
-              <label className="block mb-1">Zaloge rude:</label>
-              <textarea name="oreSupplies" className="w-full p-2 bg-gray-100" rows="2" />
-            </div>
-
-            <div className="flex items-center">
-              <label className="w-36">Rudnik rude?</label>
-              <div className="flex gap-4">
-                <label><input type="radio" name="oreDeposit" value="true" /> Da</label>
-                <label><input type="radio" name="oreDeposit" value="false" /> Ne</label>
-              </div>
-            </div>
-
-            <div className="flex items-center">
-              <label className="w-36">Rudnik premoga?</label>
-              <div className="flex gap-4">
-                <label><input type="radio" name="coalMine" value="true" /> Da</label>
-                <label><input type="radio" name="coalMine" value="false" /> Ne</label>
-              </div>
-            </div>
-          </div>
-
-          <input type="hidden" name="geometry" value={JSON.stringify(polygonPath)} />
-
-          <div className="flex justify-end gap-2 pt-4">
-            <OurButton
-              onClickDo={() => {
-                setIsModalOpen(false);
-                stopDrawing();
-              }}
-              variant="blue"
-              text="Shrani"
-              classNameProps="mr-2"
-              type="submit"
-            />
-            <OurButton
-              onClickDo={() => {
-                setIsModalOpen(false);
-                stopDrawing();
-              }}
-              text="Prekliči"
-            />
-          </div>
-        </form>
-      </OurModal>
+      <AddMineModal
+        isOpen={isModalOpen}
+        stopDrawing={stopDrawing}
+        polygonPath={polygonPath}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }
