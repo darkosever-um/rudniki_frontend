@@ -171,31 +171,6 @@ function Maps() {
           })}
       </GoogleMap>
 
-      {/* <OurButton
-        classNameProps="absolute bottom-[25px] right-[25px] z-[1000]"
-        text={"Tipka bre"}
-        onClickDo={() => {
-          setDrawingMode('polygon')
-          console.log("Kliknil")
-          console.log(drawingMode == null)
-          console.log(isModalOpen)
-          console.log(polygonPath.length)
-        }}
-      /> */}
-
-
-      
-      <OurButton
-        
-        onClickDo={() => {
-          console.log("Modal je zaprt: "+!isModalOpen)
-          console.log("Rišemo: "+drawingMode != null)
-          console.log("("+polygonPath.length+")Točke narisane: "+polygonPath.length > 0)
-          
-        }}
-        text={"IDE GAS"}
-      />
-
       <OurButton
         disabled={(isModalOpen)}
         
