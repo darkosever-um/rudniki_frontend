@@ -1,13 +1,15 @@
-FROM node:20
-
+FROM node:20 AS builder
 WORKDIR /app
-
 COPY package*.json ./
 
-RUN npm install
+ENV NODE_OPTIONS=--max_old_space_size=4096
 
+RUN npm ci
 COPY . .
+RUN npm run build # This command creates the optimized static files in /app/build
 
-EXPOSE 3000
+FROM nginx:alpine
+COPY --from=builder /app/build /usr/share/nginx/html
 
-CMD ["npm", "start"]
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
