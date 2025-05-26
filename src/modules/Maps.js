@@ -57,7 +57,7 @@ function Maps() {
   useEffect(() => {
     const fetchMines = async () => {
       try {
-        const res = await fetch(`http://127.0.0.1:8080/`);
+        const res = await fetch(`http://localhost:8080/`);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         const minesArray = Object.values(data);
