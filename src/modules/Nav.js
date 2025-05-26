@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from 'react';
+import { Link, useNavigate } from "react-router-dom";
 import OurButton from '../components/OurButton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import OurSearch from '../components/OurSearch';
+import { UserContext } from '../userContext';
 
 function Nav() {
+  // za navigiranje na odjavo...
+  const navigate = useNavigate();
+
+  // uporabnik
+  const userContext = useContext(UserContext);
+
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -66,15 +73,14 @@ function Nav() {
             </div>
 
             <div>
-              <OurButton
-                onClickDo={() => alert('Odjava')} // TODO @darkosever : dodaj funkcionalnost
-                // className="w-full mt-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
-                text={"Odjava"}
-                variant='red'
-                classNameProps='w-full mt-4'
-              >
-                Odjava
-              </OurButton>
+              {userContext.user && (
+                <OurButton
+                  onClickDo={() => {navigate('/LogOut');console.log("odjava");}}
+                  text={"Odjava"}
+                  variant='red'
+                  classNameProps='w-full mt-4'
+                />
+              )}
             </div>
           </div>
         </>

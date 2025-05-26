@@ -6,6 +6,7 @@ import { UserContext } from './userContext';
 import Nav from './modules/Nav';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import LogOut from './pages/LogOut';
 
 function App() {
   
@@ -28,6 +29,7 @@ function App() {
             <Routes>
               <Route path="/" exact element={<Home />}></Route>
               <Route path="/Login" exact element={<Login />}></Route>
+              <Route path="/LogOut" exact element={<LogOut />}></Route>
             </Routes>
           </div>
       </UserContext.Provider>
