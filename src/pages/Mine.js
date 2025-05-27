@@ -158,7 +158,7 @@ function Mine() {
       <OurButton
         text="Nazaj na zemljevid"
         onClickDo={() => navigate('/')}
-        classNameProps="bg-blue-500 text-white px-4 py-2 rounded"
+        variant='blue'
       />
 
       <OurModal isOpen={modalType !== null} onClose={closeModal}>
