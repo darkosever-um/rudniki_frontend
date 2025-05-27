@@ -2,65 +2,13 @@ import OurModal from "../components/OurModal";
 import OurButton from "../components/OurButton";
 import { useState } from "react";
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import { mineStatuses, mineTypes, mineralGrades, infrastructureStatus, workerTypes } from "../constants/MineEnum.js";
 
 const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
 
     const [minerals, setMinerals] = useState([]);
     const [infrastructures, setInfrastructures] = useState([]);
     const [workers, setWorkers] = useState([]);
-
-    const infrastructureStatus = [
-        "active",
-        "idle",
-        "broken",
-        "inrepair",
-        "outofservice",
-        "cleaning",
-        "undefined"
-    ];
-
-    const mineStatuses = [
-        "active",
-        "idle",
-        "closed",
-        "building"
-    ];
-
-    const mineTypes = [
-        "surface",
-        "underground",
-        "placer",
-        "insitu",
-        "deepsea"
-    ];
-
-    const mineralGrades = [
-        "low",
-        "medium",
-        "high",
-        "undefined"
-    ];
-
-    const workerTypes = [
-        "miner",
-        "machineoperator",
-        "blastingtechnician",
-        "maintenanceworker",
-        "surveyor",
-        "geologist",
-        "miningengineer",
-        "safetytechnician",
-        "ventilationengineer",
-        "hydrologist",
-        "electrictian",
-        "supervisor",
-        "laboratorytechnician",
-        "director",
-        "productionmanager",
-        "humanresources",
-        "accountant",
-        "undefined"
-    ];
 
     const addMineral = () => {
         setMinerals([...minerals, { name: "", min: "", max: "", grade: mineralGrades[0] }]);
