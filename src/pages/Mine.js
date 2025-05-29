@@ -114,7 +114,7 @@ function Mine() {
 
                 <div className="absolute z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap pointer-events-none">
                   Prevoženih: <strong>{inf.kilometer ?? 'neznano'}km,</strong><br/>
-                  Delovnih ur: <strong>{inf.operatingHours ?? 'neznano'}</strong><br/>
+                  Delovnih ur: <strong>{inf.operatingHours.toFixed(2) ?? 'neznano'}</strong><br/>
                   Tip: <strong>{infrastructureStatus[inf.status] ?? 'neznano'}</strong><br/>
                 </div>
               </div>
@@ -136,7 +136,7 @@ function Mine() {
                   <div className="absolute z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap pointer-events-none">
                     naziv: <strong>{worker.type ? workerTypes[worker.type] : 'neznano'}</strong>,<br/>
                     rojen: <strong>{worker.birthDate ? new Date(worker.birthDate.$date).toLocaleDateString() : 'neznano'}</strong><br/>
-                    plača: <strong>{worker.salary ?? 'neznano'} EUR</strong>
+                    plača: <strong>{worker.salary.toFixed(2) ?? 'neznano'} EUR</strong>
                   </div>
                 </div>
               ))
@@ -212,7 +212,7 @@ function Mine() {
               </div>
               <div>
                 <label className="block text-sm mb-1">Plača</label>
-                <input type="number" className="w-full border p-2 rounded"
+                <input type="number" step="0.01" className="w-full border p-2 rounded"
                   onChange={e => setFormData(prev => ({ ...prev, salary: parseFloat(e.target.value) }))} />
               </div>
             </>
@@ -227,12 +227,12 @@ function Mine() {
               </div>
               <div>
                 <label className="block text-sm mb-1">Min količina</label>
-                <input type="number" className="w-full border p-2 rounded"
+                <input type="number"  step="0.01" className="w-full border p-2 rounded"
                   onChange={e => setFormData(prev => ({ ...prev, min: parseFloat(e.target.value) }))} />
               </div>
               <div>
                 <label className="block text-sm mb-1">Max količina</label>
-                <input type="number" className="w-full border p-2 rounded"
+                <input type="number"  step="0.01" className="w-full border p-2 rounded"
                   onChange={e => setFormData(prev => ({ ...prev, max: parseFloat(e.target.value) }))} />
               </div>
               <div>
@@ -293,7 +293,7 @@ function Mine() {
               </div>
               <div>
                 <label className="block text-sm mb-1">Kilometri</label>
-                <input type="number" className="w-full border p-2 rounded"
+                <input type="number"  step="0.01" className="w-full border p-2 rounded"
                   onChange={e => setFormData(prev => ({ ...prev, kilometer: Number(e.target.value) }))} />
               </div>
             </>

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios"; // Ko de kredi BACKEND
+import { useNavigate } from "react-router-dom";
 
 function OurSearch() {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
 
@@ -12,13 +14,18 @@ function OurSearch() {
     }
 
     try {
-      const response = await axios.get("http://localhost:8080/", { // verjetno: http://localhost:8080/mines/
-        params: { q },
-      });
-      const dataFromBackend = Object.values(response.data);
-      const dataArray = [{ name: `Iskanje za: ${q}` }, ...dataFromBackend];
-      setResults(dataArray);
-      console.log(dataArray)
+      const url = `http://localhost:8080/${encodeURIComponent(q)}`;
+      const response = await axios.get(url);
+
+      console.log(`${url} - Rezultati iskanja:`, response.data);
+
+      if(response.data !== "Ni takih rudnikov"){
+        const dataFromBackend = Object.values(response.data);
+        setResults(dataFromBackend);
+        console.log("Rezultati iskanja:", dataFromBackend); 
+      }else{
+        setResults([]);
+      }
     } catch (error) {
       console.error("Napaka pri iskanju:", error);
     }
@@ -42,13 +49,25 @@ function OurSearch() {
         placeholder="Išči runike..."
         className="w-full p-1 rounded border border-gray-300"
       />
-      
+
+      {results.length === 0 && (
+        <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow">
+          <li
+            key={0}
+            className="py-1 px-2 border-b border-gray-200 last:border-b-0 hover:bg-gray-100 cursor-pointer"
+          >
+            Ni zadetkov
+          </li>
+        </ul>
+      )}
       {results.length > 0 && (
         <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow">
+          
           {results.map((item, index) => (
             <li
               key={index}
               className="py-1 px-2 border-b border-gray-200 last:border-b-0 hover:bg-gray-100 cursor-pointer"
+              onClick={() => {navigate(`/mine/${item._id.$oid}`)}}
             >
               {item.name || JSON.stringify(item)}
             </li>
