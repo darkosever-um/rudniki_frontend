@@ -23,7 +23,7 @@ jobs:
           uses: docker/build-push-action@v4
           with:
             context: .
-            file: Docker
+            file: Dockerfile
             push: true
             tags: ${{ secrets.DOCKER_HUB_NAME }}/rudniki_app:frontend
 
