@@ -50,17 +50,7 @@ function OurSearch() {
         className="w-full p-1 rounded border border-gray-300"
       />
 
-      {results.length === 0 && (
-        <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow">
-          <li
-            key={0}
-            className="py-1 px-2 border-b border-gray-200 last:border-b-0 hover:bg-gray-100 cursor-pointer"
-          >
-            Ni zadetkov
-          </li>
-        </ul>
-      )}
-      {results.length > 0 && (
+      {results && results.length > 0 && (
         <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow">
           
           {results.map((item, index) => (
