@@ -10,6 +10,7 @@ import LogOut from './pages/LogOut';
 import Mine from './pages/Mine';
 import Stats from './pages/Stats';
 import MyMine from './pages/MyMine';
+import Profile from './pages/Profile';
 
 function App() {
   
@@ -36,6 +37,7 @@ function App() {
               <Route path="/Mine/:id" element={<Mine />}></Route>
               <Route path="/Stats" element={<Stats />}></Route>
               <Route path="/Rudniki" element={<MyMine />}></Route>
+              <Route path="/Profil" element={<Profile />}></Route>
             </Routes>
           </div>
       </UserContext.Provider>
