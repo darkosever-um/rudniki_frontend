@@ -1,20 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleMap, useJsApiLoader, Circle, InfoWindow } from '@react-google-maps/api';
-import proj4 from 'proj4';
+import { GoogleMap, useJsApiLoader, InfoWindow, Polygon } from '@react-google-maps/api';
 import OurButton from '../components/OurButton';
 import DrawIcon from '@mui/icons-material/Draw';
 import EditOffIcon from '@mui/icons-material/EditOff';
 import AddMineModal from './AddMineModal';
 
 const libraries = ['drawing'];
-
-// Za transformacijo točk
-proj4.defs("EPSG:3794", "+proj=tmerc +lat_0=45.1 +lon_0=15 +k=0.9999 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs");
-const transformCoords = (e, n) => {
-  if (!e?.["$numberDecimal"] || !n?.["$numberDecimal"]) return null;
-  const [lng, lat] = proj4("EPSG:3794", "WGS84", [parseFloat(e["$numberDecimal"]), parseFloat(n["$numberDecimal"])]);
-  return { lat, lng };
-};
 
 // Za zemljevid
 const containerStyle = {
@@ -57,11 +48,12 @@ function Maps() {
   useEffect(() => {
     const fetchMines = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/`);
+        const res = await fetch(`http://localhost:8080/mine/`);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         const minesArray = Object.values(data);
         setMines(minesArray);
+        console.log('Mines fetched:', minesArray);
       } catch (error) {
         console.error('Error fetching mines:', error);
       }
@@ -69,6 +61,22 @@ function Maps() {
 
     fetchMines();
   }, []);
+
+  function calculateCentroid(path) {
+    let latSum = 0;
+    let lngSum = 0;
+    let len = path.length;
+
+    for (let i = 0; i < len; i++) {
+      latSum += path[i].lat;
+      lngSum += path[i].lng;
+    }
+
+    return {
+      lat: latSum / len,
+      lng: lngSum / len,
+    };
+  }
 
   // RISANJE, DrawingManager
   useEffect(() => {
@@ -135,34 +143,46 @@ function Maps() {
         }}
       >
         {mines &&
-          mines.map((circle, index) => {
-            const coords = transformCoords(circle.E, circle.N);
-            if (!coords) return null;
+          mines.map((mine, index) => {
+            const geometry = mine.geometry?.[0]?.geometry;
+            const polygonCoords = geometry?.coordinates?.[0]?.map(coord => ({
+              lng: coord[0],
+              lat: coord[1]
+            })) || [];
+
+            const centroid = polygonCoords.length > 0
+              ? calculateCentroid(polygonCoords)
+              : { lat: mine.lat, lng: mine.lon };
 
             return (
               <React.Fragment key={index}>
-                <Circle
-                  center={coords}
-                  radius={500}
-                  options={{
-                    strokeColor: "#000",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 1,
-                    fillColor: "blue",
-                    fillOpacity: 0.2,
-                  }}
-                  onClick={() => setClickedIndex(index)}
-                />
+                {/* Poligon */}
+                {polygonCoords.length > 0 && (
+                  <Polygon
+                    path={polygonCoords}
+                    options={{
+                      fillColor: 'blue',
+                      fillOpacity: 0.3,
+                      strokeWeight: 1,
+                      strokeOpacity: 0.8,
+                      clickable: true,
+                      editable: false,
+                      zIndex: 1,
+                    }}
+                    onClick={() => setClickedIndex(index)}
+                  />
+                )}
 
+                {/* InfoWindow na centroidu */}
                 {clickedIndex === index && (
                   <InfoWindow
-                    position={coords}
+                    position={centroid}
                     onCloseClick={() => setClickedIndex(null)}
                   >
                     <div>
-                      <h3>Ime: <strong>{circle.name}</strong></h3>
-                      <p>Občina: <strong>{circle.municipality}</strong></p>
-                      <p>Status: <strong>{circle.status}</strong></p>
+                      <h3>Ime: <strong>{mine.name}</strong></h3>
+                      <p>Občina: <strong>{mine.municipality}</strong></p>
+                      <p>Status: <strong>{mine.status}</strong></p>
                     </div>
                   </InfoWindow>
                 )}

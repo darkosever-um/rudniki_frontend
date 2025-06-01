@@ -11,6 +11,7 @@ import Mine from './pages/Mine';
 import Stats from './pages/Stats';
 import MyMine from './pages/MyMine';
 import Profile from './pages/Profile';
+import Animation from './pages/Animation';
 
 function App() {
   
@@ -38,6 +39,7 @@ function App() {
               <Route path="/Stats" element={<Stats />}></Route>
               <Route path="/Rudniki" element={<MyMine />}></Route>
               <Route path="/Profil" element={<Profile />}></Route>
+              <Route path="/Animacija" element={<Animation />}></Route>
             </Routes>
           </div>
       </UserContext.Provider>

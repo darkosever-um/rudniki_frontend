@@ -53,6 +53,7 @@ function Nav() {
                 <li><Link className="block hover:underline" to='/'>Zemljevid</Link></li>
                 <li><a href="/rudniki" className="block hover:underline">Rudniki</a></li>
                 <li><a href="/statistika" className="block hover:underline">Statistika rudnikov</a></li>
+                <li><a href="/animacija" className="block hover:underline">Animacija skozi čas</a></li>
               </ul>
 
               <br/>
