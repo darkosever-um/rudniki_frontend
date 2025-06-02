@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleMap, useJsApiLoader, InfoWindow, Polygon, Marker } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, InfoWindow, Polygon } from '@react-google-maps/api';
 import OurButton from '../components/OurButton';
 import DrawIcon from '@mui/icons-material/Draw';
 import EditOffIcon from '@mui/icons-material/EditOff';
@@ -7,8 +7,6 @@ import AddMineModal from './AddMineModal';
 import { mineStatuses } from '../constants/MineEnum';
 
 const libraries = ['drawing'];
-
-const ws = new WebSocket('ws://127.0.0.1:8080/hooks/rudnikSubscribe')
 
 // Za zemljevid
 const containerStyle = {
@@ -32,28 +30,14 @@ function Maps() {
   const [mines, setMines] = useState([]);
   const [update, setUpdate] = useState(false);
 
-  ws.onopen = function() {
-    console.log('WebSocket connection established');
-  };
-
-  ws.onmessage = function(event) {
-      console.log('Message received:', event.data);
-  };
-
-  ws.onerror = function(error) {
-      console.error('WebSocket error:', error);
-  };
-
-  ws.onclose = function(event) {
-      console.log('WebSocket closed:', event.code, event.reason);
-  };
-
   // RISANJE, DrawingManager
   const [drawingMode, setDrawingMode] = useState(null);
   const [polygonPath, setPolygonPath] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const drawingManagerRef = useRef(null);
   const mapRef = useRef(null);
+  const wsRef = useRef(null);
 
   // API google zemlejvid
   const { isLoaded } = useJsApiLoader({
@@ -82,13 +66,29 @@ function Maps() {
   }, [update]);
 
   // WebSocket za prejemanje novih rudnikov
-  ws.onmessage = function(event) {
-    const rudnik = JSON.parse(event.data);
-    setMines([...mines, rudnik]);
-    console.log('New rudnik:', rudnik);
-    console.log('Updated mines:', mines);
-    setUpdate(prev => !prev);
-  };
+  useEffect(() => {
+      const ws = new WebSocket('ws://127.0.0.1:8080/hooks/rudnikSubscribe');
+      wsRef.current = ws;
+
+      ws.onmessage = function(event) {
+        try {
+          const rudnik = JSON.parse(event.data);
+          console.log('Parsed rudnik:', rudnik);
+          
+          console.log('Updated mines:', [...mines, rudnik]);
+          setMines(prevMines => [...prevMines, rudnik]);
+          setUpdate(prev => !prev);
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
+        }
+    };
+
+    return () => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    };
+  }, []);
 
   function calculateCentroid(path) {
     let latSum = 0;
@@ -135,7 +135,7 @@ function Maps() {
         console.log('Poligon dokončan:', path);
         setPolygonPath(path);
         setIsModalOpen(true);
-        //polygon.setMap(null); // Odstrani poligon z zemljevida
+        polygon.setMap(null);
         stopDrawing();
       });
     }

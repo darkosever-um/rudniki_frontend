@@ -29,7 +29,7 @@ function MyMine() {
     if (!mines) return <div className="p-16">Nalaganje podatkov...</div>;
 
     return (
-        <div className="p-8 max-w-6xl mx-auto">
+        <div className="p-8 mt-16 max-w-6xl mx-auto">
             {mines.length > 0 ? (
                 <div>
                 <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">Moji rudniki</h1>

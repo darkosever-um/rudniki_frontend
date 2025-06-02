@@ -145,7 +145,7 @@ function Stats() {
           <ResponsiveContainer width="100%" height={400}>
             <BarChart data={stats.minesPerYear}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="year" />
+              <XAxis dataKey="year"  fontSize={8}/>
               <YAxis />
               <Tooltip />
               <Legend />
