@@ -1,28 +1,28 @@
 import { useContext, useState } from 'react';
 import { UserContext } from '../userContext';
 import { Navigate, useNavigate } from 'react-router-dom';
-import LoginModul from '../modules/Login';
+import RegisterModul from '../modules/Register';
 
-function Login() {
+function Register() {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [error, setError] = useState("");
   const userContext = useContext(UserContext); 
   
-  // za navigiranje ob uspešni prijavi
   const navigate = useNavigate();
 
-  async function handleLogin(e) {
+  async function handleRegister(e) {
     e.preventDefault();
-    const res = await fetch("http://127.0.0.1:8080/user/", {
+    const res = await fetch("http://127.0.0.1:8080/user/save", {
       method: "POST",
       credentials: "include",
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ username, email, birthDate, password })
     });
-
     const data = await res.json();
-    if (data.message !== "Napaka ob prijavi!") {
+    if (data.message !== "Napaka ob registraciji!") {
       userContext.setUserContext(data.message);
       navigate('/');
     } else {
@@ -35,17 +35,21 @@ function Login() {
   return (
     <div className="pt-16">
       {userContext.user ? <Navigate replace to="/Profil" /> : (
-        <LoginModul
+        <RegisterModul
           username={username}
+          email={email}
           password={password}
+          birthDate={birthDate}
           error={error}
           setUsername={setUsername}
+          setEmail={setEmail}
           setPassword={setPassword}
-          onSubmit={handleLogin}
+          setBirthDate={setBirthDate}
+          onSubmit={handleRegister}
         />
       )}
     </div>
   );
 }
 
-export default Login;
+export default Register;

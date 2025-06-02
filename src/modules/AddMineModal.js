@@ -1,14 +1,20 @@
 import OurModal from "../components/OurModal";
 import OurButton from "../components/OurButton";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import { mineStatuses, mineTypes, mineralGrades, infrastructureStatus, workerTypes } from "../constants/MineEnum.js";
+import { mineStatuses, mineTypes, mineralGrades, infrastructureStatus, workerTypes, mineralNames } from "../constants/MineEnum.js";
+import { UserContext } from '../userContext';
 
 const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
 
-    const [minerals, setMinerals] = useState([]);
-    const [infrastructures, setInfrastructures] = useState([]);
-    const [workers, setWorkers] = useState([]);
+  // uporabnik
+  const userContext = useContext(UserContext);
+
+  console.log("Dodaj rudnik modal, polygonPath:", polygonPath);
+
+  const [minerals, setMinerals] = useState([]);
+  const [infrastructures, setInfrastructures] = useState([]);
+  const [workers, setWorkers] = useState([]);
 
     const addMineral = () => {
         setMinerals([...minerals, { name: "", min: "", max: "", grade: mineralGrades[0] }]);
@@ -47,11 +53,33 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
         data.minerals = minerals;
         data.infrastructure = infrastructures;
         data.workers = workers;
+        //data.ownerId = userContext.user._id;
+        data.ownerId = "86f2ac31ed9b45919d3decfb";
+
+        // iz string v int
+        data.status = parseInt(data.status);
+        data.type = parseInt(data.type);
+        data.minerals = minerals.map(m => ({
+          name: parseInt(m.name),
+          min: m.min,
+          max: m.max,
+          grade: parseInt(m.grade),
+        }));
+        data.infrastructure = infrastructures.map(i => ({
+          ...i,
+          lastMaintenance: i.lastMaintenance ? new Date(i.lastMaintenance).getTime() : null,
+          status: parseInt(i.status)
+        }));
+        data.workers = workers.map(w => ({
+          ...w,
+          birthDate: new Date(w.birthDate).getTime(),
+          type: parseInt(w.type)
+        }));
 
         console.log("Oddani podatki rudnika:", data);
 
         try {
-            const response = await fetch("http://127.0.0.1:8080/", {
+            const response = await fetch("http://127.0.0.1:8080/mine/save", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -99,7 +127,7 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
         {/* Tip rudnika */}
         <div className="flex items-center gap-4">
           <label className="w-36">Tip rudnika:</label>
-          <select name="mineType" className="flex-1 p-1 bg-gray-100" required>
+          <select name="type" className="flex-1 p-1 bg-gray-100" required>
             {mineTypes.map((t, idx) => <option key={t} value={idx}>{t}</option>)}
           </select>
         </div>
@@ -109,14 +137,26 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
           <label className="block font-semibold mb-1">Minerali:</label>
           {minerals.map((mineral, i) => (
             <div key={i} className="grid grid-cols-5 gap-2 mb-2 items-center">
-              <input
+              {/* <input
                 type="text"
                 placeholder="Ime minerala"
                 value={mineral.name}
                 onChange={e => updateMineral(i, "name", e.target.value)}
                 className="p-1 bg-gray-100"
                 required
-              />
+              /> */}
+
+              <select
+                value={mineral.name}
+                onChange={e => updateMineral(i, "name", e.target.value)}
+                className="p-1 bg-gray-100"
+                required
+              >
+                {mineralNames.map((grade, idx) => (
+                  <option key={grade} value={idx}>{grade}</option>
+                ))}
+              </select>
+
               <input
                 type="number"
                 placeholder="Min zaloga"
@@ -157,7 +197,7 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
           {infrastructures.map((infra, i) => (
             <div key={i} className="grid grid-cols-3 md:grid-cols-7 gap-2 mb-2 items-center">
               <select
-                value={infra.type}
+                value={infra.status}
                 onChange={e => updateInfrastructure(i, "status", e.target.value)}
                 className="p-1 bg-gray-100"
                 required
@@ -184,7 +224,7 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
                 type="number"
                 placeholder="Pov. poraba goriva"
                 value={infra.avgFuelConsumption}
-                onChange={e => updateInfrastructure(i, "avgFuelConsumption", e.target.value)}
+                onChange={e => updateInfrastructure(i, "avgFuelConsumption", parseFloat(e.target.value))}
                 className="p-1 bg-gray-100"
               />
               <input
@@ -192,6 +232,20 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
                 placeholder="Zadnje vzdrževanje"
                 value={infra.lastMaintenance}
                 onChange={e => updateInfrastructure(i, "lastMaintenance", e.target.value)}
+                className="p-1 bg-gray-100"
+              />
+              <input
+                type="number"
+                placeholder="Kilometri"
+                value={infra.kilometer}
+                onChange={e => updateInfrastructure(i, "kilometer", parseFloat(e.target.value))}
+                className="p-1 bg-gray-100"
+              />
+              <input
+                type="number"
+                placeholder="Delovne ure"
+                value={infra.operatingHours}
+                onChange={e => updateInfrastructure(i, "operatingHours", parseFloat(e.target.value))}
                 className="p-1 bg-gray-100"
               />
               <button type="button" onClick={() => {

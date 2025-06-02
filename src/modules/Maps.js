@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleMap, useJsApiLoader, InfoWindow, Polygon } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, InfoWindow, Polygon, Marker } from '@react-google-maps/api';
 import OurButton from '../components/OurButton';
 import DrawIcon from '@mui/icons-material/Draw';
 import EditOffIcon from '@mui/icons-material/EditOff';
@@ -124,7 +124,7 @@ function Maps() {
   }, [isLoaded, drawingMode]);
   const stopDrawing = () => {
     setDrawingMode(null);
-    setPolygonPath([]);
+    //setPolygonPath([]);
     if (drawingManagerRef.current) {
       drawingManagerRef.current.setDrawingMode(null);
     }
@@ -157,6 +157,15 @@ function Maps() {
 
             return (
               <React.Fragment key={index}>
+                {/* Marker za rudnik */}
+                {/* <Marker
+                  position={{ lat: mine.lat, lng: mine.lon }}
+                  onClick={() => setClickedIndex(index)}
+                  icon={{
+                    url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+                    scaledSize: new window.google.maps.Size(30, 30),
+                  }}
+                /> */}
                 {/* Poligon */}
                 {polygonCoords.length > 0 && (
                   <Polygon

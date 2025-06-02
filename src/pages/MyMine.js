@@ -12,10 +12,11 @@ function MyMine() {
     useEffect(() => {
         const fetchMine = async () => {
             try {
-            const res = await fetch(`http://localhost:8080/user/mines/${id}`);
+            const res = await fetch(`http://127.0.0.1:8080/user/mines/6834db78f40c18f6bc0cde01`); // ${id}
             if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             const data = await res.json();
-            setMines(data);
+            console.log('Mines fetched:', data);
+            setMines([data]);
             } catch (err) {
                 setError(err.message);
             }

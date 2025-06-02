@@ -66,7 +66,6 @@ function Mine() {
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         setMine(data);
-        console.log('Mine data:', data);
       } catch (err) {
         setError(err.message);
       }
@@ -146,14 +145,14 @@ function Mine() {
         ) : '-'} />
       </div>
       
-      <div className="mb-8">
+      {/* <div className="mb-8">
         {mine.modified.$date !== mine.created.$date ?
           (<p className='text-gray-400'>Rudnik spremenjen: {mine.modified ? new Date(mine.modified.$date).toLocaleString() : 'ni podatka'}</p>)
           : <p className='text-gray-400'>Rudnik še ni bil posodobljen.</p>
         }
         <p className='text-gray-400'>Rudnik dodan: {mine.created ? new Date(mine.created.$date).toLocaleString() : 'ni podatka'}</p>
         <p className='text-gray-400'>Ustvaril: {mine.ownerId ? mine.ownerId.$oid : 'ni podatka'}</p>
-      </div>
+      </div> */}
 
       <OurButton
         text="Nazaj na zemljevid"
