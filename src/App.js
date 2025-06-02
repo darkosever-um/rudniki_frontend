@@ -36,7 +36,7 @@ function App() {
               <Route path="/Login" element={<Login />}></Route>
               <Route path="/LogOut" element={<LogOut />}></Route>
               <Route path="/Mine/:id" element={<Mine />}></Route>
-              <Route path="/Stats" element={<Stats />}></Route>
+              <Route path="/Statistika" element={<Stats />}></Route>
               <Route path="/Rudniki" element={<MyMine />}></Route>
               <Route path="/Profil" element={<Profile />}></Route>
               <Route path="/Animacija" element={<Animation />}></Route>
