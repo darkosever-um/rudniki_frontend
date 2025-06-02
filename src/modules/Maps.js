@@ -4,6 +4,7 @@ import OurButton from '../components/OurButton';
 import DrawIcon from '@mui/icons-material/Draw';
 import EditOffIcon from '@mui/icons-material/EditOff';
 import AddMineModal from './AddMineModal';
+import { mineStatuses } from '../constants/MineEnum';
 
 const libraries = ['drawing'];
 
@@ -182,7 +183,7 @@ function Maps() {
                     <div>
                       <h3>Ime: <strong>{mine.name}</strong></h3>
                       <p>Občina: <strong>{mine.municipality}</strong></p>
-                      <p>Status: <strong>{mine.status}</strong></p>
+                      <p>Status: <strong>{mineStatuses[mine.status]}</strong></p>
                     </div>
                   </InfoWindow>
                 )}
