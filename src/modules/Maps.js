@@ -8,6 +8,8 @@ import { mineStatuses } from '../constants/MineEnum';
 
 const libraries = ['drawing'];
 
+const ws = new WebSocket('ws://127.0.0.1:8080/hooks/rudnikSubscribe')
+
 // Za zemljevid
 const containerStyle = {
   width: '100%',
@@ -28,6 +30,23 @@ const options = {
 function Maps() {
   // Hramba rudnikov
   const [mines, setMines] = useState([]);
+  const [update, setUpdate] = useState(false);
+
+  ws.onopen = function() {
+    console.log('WebSocket connection established');
+  };
+
+  ws.onmessage = function(event) {
+      console.log('Message received:', event.data);
+  };
+
+  ws.onerror = function(error) {
+      console.error('WebSocket error:', error);
+  };
+
+  ws.onclose = function(event) {
+      console.log('WebSocket closed:', event.code, event.reason);
+  };
 
   // RISANJE, DrawingManager
   const [drawingMode, setDrawingMode] = useState(null);
@@ -54,14 +73,22 @@ function Maps() {
         const data = await res.json();
         const minesArray = Object.values(data);
         setMines(minesArray);
-        console.log('Mines fetched:', minesArray);
       } catch (error) {
         console.error('Error fetching mines:', error);
       }
     };
 
     fetchMines();
-  }, []);
+  }, [update]);
+
+  // WebSocket za prejemanje novih rudnikov
+  ws.onmessage = function(event) {
+    const rudnik = JSON.parse(event.data);
+    setMines([...mines, rudnik]);
+    console.log('New rudnik:', rudnik);
+    console.log('Updated mines:', mines);
+    setUpdate(prev => !prev);
+  };
 
   function calculateCentroid(path) {
     let latSum = 0;
@@ -157,15 +184,6 @@ function Maps() {
 
             return (
               <React.Fragment key={index}>
-                {/* Marker za rudnik */}
-                {/* <Marker
-                  position={{ lat: mine.lat, lng: mine.lon }}
-                  onClick={() => setClickedIndex(index)}
-                  icon={{
-                    url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-                    scaledSize: new window.google.maps.Size(30, 30),
-                  }}
-                /> */}
                 {/* Poligon */}
                 {polygonCoords.length > 0 && (
                   <Polygon
@@ -205,7 +223,6 @@ function Maps() {
         disabled={(isModalOpen)}
         
         onClickDo={() => {
-          console.log(drawingManagerRef)
           if (drawingMode) {
             stopDrawing();
           } else {

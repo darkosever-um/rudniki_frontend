@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import OurButton from '../components/OurButton';
 import OurModal from '../components/OurModal';
 import Plus from '@mui/icons-material/Add';
-import { infrastructureStatus, mineralGrades, mineStatuses, mineTypes, workerTypes } from "../constants/MineEnum.js";
+import { infrastructureStatus, mineralGrades, mineralNames, mineStatuses, mineTypes, workerTypes } from "../constants/MineEnum.js";
 
 function Mine() {
   const { id } = useParams();
@@ -41,7 +41,6 @@ function Mine() {
         path = '/addInfrastructure';
       }
       
-
       await fetch('http://localhost:8080/mine' + path, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -49,7 +48,6 @@ function Mine() {
       });
 
       setUpdate(Date.now());
-      // mordal bi posodobiti rudnikov modified
 
       closeModal();
     } catch (err) {
@@ -82,15 +80,15 @@ function Mine() {
       <h1 className="text-3xl font-bold mb-6">{mine.name}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <Stat label="Status" value={mine.status ? mineStatuses[mine.status] : '-'} />
-        <Stat label="Tip" value={mine.type ? mineTypes[mine.type] : '-'} />
+        <Stat label="Status" value={mineStatuses[mine.status]} />
+        <Stat label="Tip" value={mineTypes[mine.type]} />
         <Stat label="Minerali" value={mine.minerals ? (
           mine.minerals.length > 0 ? (
             <div>
             {mine.minerals.map((mineral, index) => (
               <div key={index} className="relative inline-block group mr-2 mb-2">
                 <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
-                  {mineral.name} ({mineral.grade ? mineralGrades[mineral.grade] : 'neznano'})
+                  {mineralNames[mineral.name]} ({mineral.grade ? mineralGrades[mineral.grade] : 'neznano'})
                 </span>
 
                 <div className="absolute z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap pointer-events-none">
@@ -102,11 +100,11 @@ function Mine() {
             </div>
           ): 'ni dodanih mineralov'
         ) : '-'} />
-        <Stat label="Infrastruktura" value={mine.infrastructure ? (
-          mine.infrastructure.length > 0 ? (
-            <div>
-            {mine.infrastructure.map((inf, index) => (
-              <div key={index} className="relative inline-block group mr-2 mb-2">
+        <Stat label="Infrastruktura" value={mine.workers ? (
+          <div>
+            {mine.infrastructure.length > 0 ? (
+              mine.infrastructure.map((inf, index) => (
+                <div key={index} className="relative inline-block group mr-2 mb-2">
                 <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
                   {inf.brand} {inf.model}
                 </span>
@@ -117,13 +115,12 @@ function Mine() {
                   Tip: <strong>{infrastructureStatus[inf.status] ?? 'neznano'}</strong><br/>
                 </div>
               </div>
-            ))}
+              ))
+            ): 'ni infrastruktur '}
             <OurButton onClickDo={() => openModal('infrastructure')} text={<Plus/>} classNameProps='px-1 py-0'/>
-            </div>
-          )
-           : 'ni dodanih infrastrukturnih objektov'
+          </div>
         ) : '-'} />
-        <Stat label="Infrastruktura" value={mine.workers ? (
+        <Stat label="Delavci" value={mine.workers ? (
           <div>
             {mine.workers.length > 0 ? (
               mine.workers.map((worker, index) => (
@@ -139,20 +136,11 @@ function Mine() {
                   </div>
                 </div>
               ))
-            ): 'ni dodanih delavcev'}
+            ): 'ni dodanih delavcev '}
             <OurButton onClickDo={() => openModal('worker')} text={<Plus/>} classNameProps='px-1 py-0'/>
           </div>
         ) : '-'} />
       </div>
-      
-      {/* <div className="mb-8">
-        {mine.modified.$date !== mine.created.$date ?
-          (<p className='text-gray-400'>Rudnik spremenjen: {mine.modified ? new Date(mine.modified.$date).toLocaleString() : 'ni podatka'}</p>)
-          : <p className='text-gray-400'>Rudnik še ni bil posodobljen.</p>
-        }
-        <p className='text-gray-400'>Rudnik dodan: {mine.created ? new Date(mine.created.$date).toLocaleString() : 'ni podatka'}</p>
-        <p className='text-gray-400'>Ustvaril: {mine.ownerId ? mine.ownerId.$oid : 'ni podatka'}</p>
-      </div> */}
 
       <OurButton
         text="Nazaj na zemljevid"
@@ -212,7 +200,7 @@ function Mine() {
               <div>
                 <label className="block text-sm mb-1">Plača</label>
                 <input type="number" step="0.01" className="w-full border p-2 rounded"
-                  onChange={e => setFormData(prev => ({ ...prev, salary: parseFloat(e.target.value) }))} />
+                  onChange={e => setFormData(prev => ({ ...prev, salary: parseFloat(e.target.value).toFixed(2) }))} />
               </div>
             </>
           )}
@@ -221,8 +209,12 @@ function Mine() {
             <>
               <div>
                 <label className="block text-sm mb-1">Ime minerala</label>
-                <input type="text" className="w-full border p-2 rounded"
-                  onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))} />
+                <select className="w-full border p-2 rounded"
+                  onChange={e => setFormData(prev => ({ ...prev, name: parseInt(e.target.value) }))}>
+                  {mineralNames.map((name, idx) => (
+                    <option key={idx} value={idx}>{name}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm mb-1">Min količina</label>

@@ -10,8 +10,6 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
   // uporabnik
   const userContext = useContext(UserContext);
 
-  console.log("Dodaj rudnik modal, polygonPath:", polygonPath);
-
   const [minerals, setMinerals] = useState([]);
   const [infrastructures, setInfrastructures] = useState([]);
   const [workers, setWorkers] = useState([]);
@@ -23,7 +21,7 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
         setInfrastructures([...infrastructures, { status: infrastructureStatus[0], brand: "", model: "", avgFuelConsumption: "", lastMaintenance: "", operatingHours: "", kilometer: "" }]);
     };
     const addWorker = () => {
-        setWorkers([...workers, { firstName: "", lastName: "", birthDate: "", type: workerTypes[0], salary: "" }]);
+        setWorkers([...workers, { firstName: "", lastName: "", birthDate: "", type: 0, salary: 0 }]);
     };
 
     const updateMineral = (index, field, value) => {
@@ -53,8 +51,7 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
         data.minerals = minerals;
         data.infrastructure = infrastructures;
         data.workers = workers;
-        //data.ownerId = userContext.user._id;
-        data.ownerId = "86f2ac31ed9b45919d3decfb";
+        data.ownerId = userContext.user;
 
         // iz string v int
         data.status = parseInt(data.status);
@@ -73,10 +70,9 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
         data.workers = workers.map(w => ({
           ...w,
           birthDate: new Date(w.birthDate).getTime(),
-          type: parseInt(w.type)
+          type: parseInt(w.type),
+          salary: parseFloat(w.salary).toFixed(2)
         }));
-
-        console.log("Oddani podatki rudnika:", data);
 
         try {
             const response = await fetch("http://127.0.0.1:8080/mine/save", {
@@ -92,7 +88,6 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
             }
 
             const result = await response.json();
-            console.log("Shranjeno:", result);
 
             stopDrawing();
             onClose();
@@ -295,9 +290,10 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
               </select>
               <input
                 type="number"
+                step={0.01}
                 placeholder="Plača"
-                value={worker.salary}
-                onChange={e => updateWorker(i, "salary", e.target.value)}
+                // value={worker.salary}
+                onChange={e => updateWorker(i, "salary", parseFloat(e.target.value).toFixed(2))}
                 className="p-1 bg-gray-100"
                 required
               />
