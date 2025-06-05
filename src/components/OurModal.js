@@ -1,15 +1,15 @@
 import React from 'react';
 
-const OurModal = ({ isOpen, onClose, children }) => {
+const OurModal = ({ isOpen, onClose, children, addClassName="" }) => {
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50`}
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-[90%] max-h-[90%] overflow-y-auto relative shadow-lg"
+        className={`bg-white dark:bg-gray-800 rounded-lg p-6 max-w-[90%] max-h-[90%] overflow-y-auto relative shadow-lg ${addClassName}`}
         onClick={(e) => e.stopPropagation()}
       >
         <button

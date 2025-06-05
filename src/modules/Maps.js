@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { GoogleMap, useJsApiLoader, InfoWindow, Polygon } from '@react-google-maps/api';
 import OurButton from '../components/OurButton';
 import DrawIcon from '@mui/icons-material/Draw';
 import EditOffIcon from '@mui/icons-material/EditOff';
 import AddMineModal from './AddMineModal';
 import { mineStatuses } from '../constants/MineEnum';
+import { useNotification } from '../notificationContext';
+import { UserContext } from '../userContext';
 
 const libraries = ['drawing'];
 
@@ -26,14 +28,18 @@ const options = {
 };
 
 function Maps() {
+  // Uvoz komponent za notifikacije
+  const { addNotification } = useNotification();
+  const userContext = useContext(UserContext); 
+
   // Hramba rudnikov
   const [mines, setMines] = useState([]);
-  const [update, setUpdate] = useState(false);
 
   // RISANJE, DrawingManager
   const [drawingMode, setDrawingMode] = useState(null);
   const [polygonPath, setPolygonPath] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [update, setUpdate] = useState(false);
 
   const drawingManagerRef = useRef(null);
   const mapRef = useRef(null);
@@ -73,11 +79,13 @@ function Maps() {
       ws.onmessage = function(event) {
         try {
           const rudnik = JSON.parse(event.data);
-          console.log('Parsed rudnik:', rudnik);
-          
-          console.log('Updated mines:', [...mines, rudnik]);
           setMines(prevMines => [...prevMines, rudnik]);
           setUpdate(prev => !prev);
+          addNotification({
+            type: 'notification',
+            title: 'Nov rudnik',
+            text: 'Ime novega rudnika: '+rudnik.name+'.',
+          });
         } catch (error) {
           console.error('Error parsing WebSocket message:', error);
         }
@@ -88,7 +96,7 @@ function Maps() {
         ws.close();
       }
     };
-  }, []);
+  }, [ mines, update, addNotification ]);
 
   function calculateCentroid(path) {
     let latSum = 0;
@@ -128,6 +136,18 @@ function Maps() {
 
       // Listener -> da konča risanje
       drawingManagerRef.current.addListener('polygoncomplete', (polygon) => {
+
+        if(!userContext.user) {
+          addNotification({
+            type: 'alert',
+            title: 'Napaka',
+            text: 'Niste prijavljeni.',
+          });
+          polygon.setMap(null);
+          stopDrawing();
+          return;
+        }
+
         const path = polygon.getPath().getArray().map((latlng) => ({
           lat: latlng.lat(),
           lng: latlng.lng(),
@@ -148,7 +168,7 @@ function Maps() {
         drawingManagerRef.current = null;
       }
     };
-  }, [isLoaded, drawingMode]);
+  }, [isLoaded, drawingMode, addNotification, userContext.user]);
   const stopDrawing = () => {
     setDrawingMode(null);
     //setPolygonPath([]);

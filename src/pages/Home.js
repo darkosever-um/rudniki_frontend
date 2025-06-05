@@ -5,8 +5,9 @@ function Home() {
 
   return (
     <div className="App">
-      <NotificationStack/>      
-      <Maps/>
+      <NotificationStack>   
+        <Maps/>
+      </NotificationStack>
     </div>
   );
 }

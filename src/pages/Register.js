@@ -7,43 +7,56 @@ function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [birthDate, setBirthDate] = useState("");
+  const [passwordSecond, setPasswordSecond] = useState("");
+  const [birthDate, setBirthDate] = useState(0);
   const [error, setError] = useState("");
   const userContext = useContext(UserContext); 
   
   const navigate = useNavigate();
 
   async function handleRegister(e) {
-    e.preventDefault();
-    const res = await fetch("http://127.0.0.1:8080/user/save", {
-      method: "POST",
-      credentials: "include",
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, birthDate, password })
-    });
-    const data = await res.json();
-    if (data.message !== "Napaka ob registraciji!") {
-      userContext.setUserContext(data.message);
-      navigate('/');
+
+    if(password !== passwordSecond) {
+      setError("Gesli se ne ujemata.");
+    } else if (username === "" || email === "" || password === "" || birthDate === 0) {
+      setError("Vsa polja so obvezna.");
     } else {
-      setUsername("");
-      setPassword("");
-      setError("Neveljavno uporabniško ime ali geslo.");
+      e.preventDefault();
+      const res = await fetch("http://127.0.0.1:8080/user/save", {
+        method: "POST",
+        credentials: "include",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, birthDate, password })
+      });
+
+      const data = await res.json();
+      if (data.message !== "Napaka ob registraciji!") {
+        userContext.setUserContext(data.message);
+        navigate('/');
+      } else {
+        setUsername("");
+        setPassword("");
+        setPasswordSecond("");
+        setError("Neveljavno uporabniško ime ali geslo.");
+      }
     }
   }
 
   return (
     <div className="pt-16">
       {userContext.user ? <Navigate replace to="/Profil" /> : (
+        // Prikaz registracijskega modula
         <RegisterModul
           username={username}
           email={email}
           password={password}
+          passwordSecond={passwordSecond}
           birthDate={birthDate}
           error={error}
           setUsername={setUsername}
           setEmail={setEmail}
           setPassword={setPassword}
+          setPasswordSecond={setPasswordSecond}
           setBirthDate={setBirthDate}
           onSubmit={handleRegister}
         />

@@ -83,7 +83,8 @@ function Mine() {
         <Stat label="Status" value={mineStatuses[mine.status]} />
         <Stat label="Tip" value={mineTypes[mine.type]} />
         <Stat label="Minerali" value={mine.minerals ? (
-          mine.minerals.length > 0 ? (
+          <div>
+          {mine.minerals.length > 0 ? (
             <div>
             {mine.minerals.map((mineral, index) => (
               <div key={index} className="relative inline-block group mr-2 mb-2">
@@ -96,28 +97,30 @@ function Mine() {
                 </div>
               </div>
             ))}
-            <OurButton onClickDo={() => openModal('mineral')} text={<Plus/>} classNameProps='px-1 py-0'/>
             </div>
-          ): 'ni dodanih mineralov'
+          ): 'ni dodanih mineralov '}
+            <button onClick={() => openModal('mineral')} className="p-0.5 rounded-3xl bg-blue-200 hover:bg-gray-300 text-blue-700 text-sm shadow-sm" ><Plus /></button>
+
+          </div>
         ) : '-'} />
         <Stat label="Infrastruktura" value={mine.workers ? (
           <div>
             {mine.infrastructure.length > 0 ? (
               mine.infrastructure.map((inf, index) => (
                 <div key={index} className="relative inline-block group mr-2 mb-2">
-                <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
-                  {inf.brand} {inf.model}
-                </span>
+                  <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
+                    {inf.brand} {inf.model}
+                  </span>
 
-                <div className="absolute z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap pointer-events-none">
-                  Prevoženih: <strong>{inf.kilometer ?? 'neznano'}km,</strong><br/>
-                  Delovnih ur: <strong>{inf.operatingHours.toFixed(2) ?? 'neznano'}</strong><br/>
-                  Tip: <strong>{infrastructureStatus[inf.status] ?? 'neznano'}</strong><br/>
+                  <div className="absolute z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap pointer-events-none">
+                    Prevoženih: <strong>{inf.kilometer ?? 'neznano'}km,</strong><br/>
+                    Delovnih ur: <strong>{inf.operatingHours.toFixed(2) ?? 'neznano'}</strong><br/>
+                    Tip: <strong>{infrastructureStatus[inf.status] ?? 'neznano'}</strong><br/>
+                  </div>
                 </div>
-              </div>
               ))
             ): 'ni infrastruktur '}
-            <OurButton onClickDo={() => openModal('infrastructure')} text={<Plus/>} classNameProps='px-1 py-0'/>
+            <button onClick={() => openModal('infrastructure')} className="p-0.5 rounded-3xl bg-blue-200 hover:bg-gray-300 text-blue-700 text-sm shadow-sm" ><Plus /></button>
           </div>
         ) : '-'} />
         <Stat label="Delavci" value={mine.workers ? (
@@ -137,7 +140,7 @@ function Mine() {
                 </div>
               ))
             ): 'ni dodanih delavcev '}
-            <OurButton onClickDo={() => openModal('worker')} text={<Plus/>} classNameProps='px-1 py-0'/>
+            <button onClick={() => openModal('worker')} className="p-0.5 rounded-3xl bg-blue-200 hover:bg-gray-300 text-blue-700 text-sm shadow-sm" ><Plus /></button>
           </div>
         ) : '-'} />
       </div>
