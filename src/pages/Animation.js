@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, Circle, InfoWindow } from '@react-google-maps/api';
 import OurModal from '../components/OurModal';
 import axios from 'axios';
+import { mineralNames, mineTypes } from '../constants/MineEnum';
 
 const containerStyle = {
   width: '100%',
@@ -17,6 +18,8 @@ const options = {
   disableDefaultUI: true,
 };
 
+const LIBRARIES = ['drawing'];
+
 function Animation() {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [from, setFrom] = useState(1900);
@@ -25,10 +28,11 @@ function Animation() {
   const [visibleMines, setVisibleMines] = useState([]);
   const [currentYear, setCurrentYear] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [hoveredMine, setHoveredMine] = useState(null);
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-    libraries: ['drawing'],
+    libraries: LIBRARIES,
   });
 
   const handleSubmit = async () => {
@@ -42,12 +46,19 @@ function Animation() {
 
       const grouped = {};
       for (const mine of fetchedMines) {
-        if (!grouped[mine.year]) {
-          grouped[mine.year] = [];
+        if (!grouped[mine.startYear]) {
+          grouped[mine.startYear] = [];
         }
-        grouped[mine.year].push(mine);
+        grouped[mine.startYear].push(mine);
       }
 
+      if(grouped["undefined"] === "Ni rudnikov v tem časovnem intervalu!"){
+        alert("Ni rudnikov v tem časovnem intervalu!");
+        setIsModalOpen(false);
+        return;
+      }
+
+      console.log('Pridobljeni rudniki:', grouped);
       setMinesByYear(grouped);
       setIsModalOpen(false);
       setIsAnimating(true);
@@ -67,12 +78,24 @@ function Animation() {
         setIsAnimating(false);
         return;
       }
-      setCurrentYear(year);
-      const minesThisYear = minesByYear[year] || [];
-      setVisibleMines((prev) => [...prev, ...minesThisYear]);
 
+      setCurrentYear(year);
+
+      const activeMines = [];
+      for (const mines of Object.values(minesByYear)) {
+        for (const mine of mines) {
+          if (
+            mine.startYear <= year &&
+            (mine.endYear === null || mine.endYear >= year)
+          ) {
+            activeMines.push(mine);
+          }
+        }
+      }
+
+      setVisibleMines(activeMines);
       year++;
-    }, 500);
+    }, 250);
 
     return () => clearInterval(interval);
   }, [isAnimating, from, to, minesByYear]);
@@ -88,8 +111,36 @@ function Animation() {
         options={options}
       >
         {visibleMines.map((mine, index) => (
-          <Marker key={index} position={{ lat: mine.lat, lng: mine.lon }} />
+          <Circle
+            key={index}
+            center={{ lat: mine.lat, lng: mine.lon }}
+            radius={750}
+            options={{
+              strokeColor: '#000',
+              strokeOpacity: 0.2,
+              strokeWeight: 2,
+              fillColor: '#0000FF',
+              fillOpacity: 0.3,
+              clickable: true,
+            }}
+            onMouseOver={() => setHoveredMine(mine)}
+            onMouseOut={() => setHoveredMine(null)}
+          />
         ))}
+
+        {hoveredMine && (
+          <InfoWindow
+            position={{ lat: hoveredMine.lat, lng: hoveredMine.lon }}
+            onCloseClick={() => setHoveredMine(null)}
+          >
+            <div className="text-sm">
+              <div><strong>Ime:</strong> {hoveredMine.name}</div>
+              <div><strong>Tip:</strong> {mineTypes[hoveredMine.type]}</div>
+              <div><strong>Občina:</strong> {hoveredMine.municipality}</div>
+              <div><strong>Minerali:</strong> {hoveredMine.minerals?.map((m) => mineralNames[m.name]).join(', ')}</div>
+            </div>
+          </InfoWindow>
+        )}
       </GoogleMap>
 
       <OurModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
