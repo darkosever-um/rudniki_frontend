@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { GoogleMap, useJsApiLoader, InfoWindow, Polygon } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, InfoWindow, Polygon, OverlayView } from '@react-google-maps/api';
 import OurButton from '../components/OurButton';
 import DrawIcon from '@mui/icons-material/Draw';
 import EditOffIcon from '@mui/icons-material/EditOff';
@@ -53,6 +53,7 @@ function Maps() {
 
   // MAPA INFO
   const [clickedIndex, setClickedIndex] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(9);
 
   // FETCH, Pridobivanje rudnikov
   useEffect(() => {
@@ -189,54 +190,80 @@ function Maps() {
         onLoad={(map) => {
           mapRef.current = map;
         }}
+        onZoomChanged={() => {
+          if (mapRef.current) {
+            const zoom = mapRef.current.getZoom();
+            setZoomLevel(zoom);
+          }
+        }}
       >
-        {mines &&
-          mines.map((mine, index) => {
-            const geometry = mine.geometry?.[0]?.geometry;
-            const polygonCoords = geometry?.coordinates?.[0]?.map(coord => ({
-              lng: coord[0],
-              lat: coord[1]
-            })) || [];
+        {mines && mines.map((mine, index) => {
+          const geometry = mine.geometry?.[0]?.geometry;
+          const polygonCoords = geometry?.coordinates?.[0]?.map(coord => ({
+            lng: coord[0],
+            lat: coord[1]
+          })) || [];
 
-            const centroid = polygonCoords.length > 0
-              ? calculateCentroid(polygonCoords)
-              : { lat: mine.lat, lng: mine.lon };
+          const centroid = polygonCoords.length > 0
+            ? calculateCentroid(polygonCoords)
+            : { lat: mine.lat, lng: mine.lon };
 
-            return (
-              <React.Fragment key={index}>
-                {/* Poligon */}
-                {polygonCoords.length > 0 && (
-                  <Polygon
-                    path={polygonCoords}
-                    options={{
-                      fillColor: 'blue',
-                      fillOpacity: 0.3,
-                      strokeWeight: 1,
-                      strokeOpacity: 0.8,
-                      clickable: true,
-                      editable: false,
-                      zIndex: 1,
-                    }}
+          return (
+            <React.Fragment key={index}>
+              {/* Pokaži poligon, če je dovolj blizu */}
+              {zoomLevel >= 10 && polygonCoords.length > 0 && (
+                <Polygon
+                  path={polygonCoords}
+                  options={{
+                    fillColor: 'blue',
+                    fillOpacity: 0.3,
+                    strokeWeight: 1,
+                    strokeOpacity: 0.8,
+                    clickable: true,
+                    editable: false,
+                    zIndex: 1,
+                  }}
+                  onClick={() => setClickedIndex(index)}
+                />
+              )}
+
+              {/* Pokaži krogec, če si oddaljen */}
+              {zoomLevel < 10 && (
+                <OverlayView
+                  // position={centroid}
+                  position={{ lat: mine.lat, lng: mine.lon }}
+                  mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                >
+                  <div
                     onClick={() => setClickedIndex(index)}
+                    style={{
+                      backgroundColor: 'rgba(0, 0, 255, 0.5)',
+                      borderRadius: '50%',
+                      width: '7px',
+                      height: '7px',
+                      transform: 'translate(-50%, -50%)',
+                      pointerEvents: 'auto',
+                    }}
                   />
-                )}
+                </OverlayView>
+              )}
 
-                {/* InfoWindow na centroidu */}
-                {clickedIndex === index && (
-                  <InfoWindow
-                    position={centroid}
-                    onCloseClick={() => setClickedIndex(null)}
-                  >
-                    <div>
-                      <h3>Ime: <strong>{mine.name}</strong></h3>
-                      <p>Občina: <strong>{mine.municipality}</strong></p>
-                      <p>Status: <strong>{mineStatuses[mine.status]}</strong></p>
-                    </div>
-                  </InfoWindow>
-                )}
-              </React.Fragment>
-            );
-          })}
+              {/* Info okno */}
+              {clickedIndex === index && (
+                <InfoWindow
+                  position={centroid}
+                  onCloseClick={() => setClickedIndex(null)}
+                >
+                  <div>
+                    <h3>Ime: <strong>{mine.name}</strong></h3>
+                    <p>Občina: <strong>{mine.municipality}</strong></p>
+                    <p>Status: <strong>{mineStatuses[mine.status]}</strong></p>
+                  </div>
+                </InfoWindow>
+              )}
+            </React.Fragment>
+          );
+        })}
       </GoogleMap>
 
       <OurButton
