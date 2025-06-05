@@ -40,11 +40,15 @@ function Profile() {
                         <strong>Email:</strong> {user.email}
                     </div>
                     <div className="mb-2">
+                        <strong>Rojen:</strong> {user.created ? new Date(user.birthDate.$date).toLocaleString() : 'neznano'}
+                    </div>
+                    <div className="mb-2">
                         <strong>Število rudnikov:</strong> {user.mines ? user.mines.length : 0}
                     </div>
                     <div className="mb-2">
                         <strong>Datum registracije:</strong> {user.created ? new Date(user.created.$date).toLocaleString() : 'neznano'}
-                </div>
+                    </div>
+                    
                 <OurButton
                     onClickDo={() => navigate('/LogOut')}
                     className="mt-4"

@@ -1,4 +1,17 @@
 import React, { useState, useEffect } from "react";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 function Stats() {
   const [stats, setStats] = useState(null);
@@ -11,7 +24,11 @@ function Stats() {
         const res = await fetch(`http://localhost:8080/mine/statistics`);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
+
+        data.minesPerYear.sort((a, b) => a.year - b.year);
+
         setStats(data);
+        console.log("Statistics fetched:", data);
       } catch (err) {
         setError(err.message);
       }
@@ -21,33 +38,122 @@ function Stats() {
   }, []);
 
   const menuOptions = [
+    { key: "minesByMineral", label: "Rudniki po mineralih" },
+    { key: "minesByMineralGrade", label: "Rudniki po oceni minerala" },
+    { key: "minesByStatus", label: "Rudniki po statusu" },
+    { key: "minesByType", label: "Rudniki po vrsti" },
     { key: "minesPerMunicipality", label: "Rudniki po občinah" },
     { key: "minesPerYear", label: "Rudniki po letih" },
-    { key: "minesByType", label: "Rudniki po vrsti" },
   ];
+
+  const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#00C49F", "#FFBB28", "#0088FE"];
 
   const renderStat = () => {
     if (!stats) return <p>Nalaganje podatkov...</p>;
 
     switch (selectedStat) {
-      case "minesPerMunicipality":
-        return (stats.minesPerMunicipality || []).map((entry, idx) => (
-          <div key={idx} className="mb-2 p-2 border rounded">
-            <p><strong>{entry.municipality}</strong>: {entry.count} rudnikov</p>
-          </div>
-        ));
-      case "minesPerYear":
-        return (stats.minesPerYear || []).map((entry, idx) => (
-          <div key={idx} className="mb-2 p-2 border rounded">
-            <p><strong>{entry.year}</strong>: {entry.count} rudnikov</p>
-          </div>
-        ));
+      case "minesByMineral":
+        return (
+          <ResponsiveContainer width="100%" height={520}>
+            <PieChart>
+              <Pie
+                data={stats.minesByMineral}
+                dataKey="count"
+                nameKey="mineral"
+                cx="50%"
+                cy="50%"
+                outerRadius={130}
+                label
+              >
+                {stats.minesByMineral.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        );
+
+      case "minesByMineralGrade":
+        return (
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={stats.minesByMineralGrade}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="grade" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#82ca9d" name="Rudnikov" />
+            </BarChart>
+          </ResponsiveContainer>
+        );
+
+      case "minesByStatus":
+        return (
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={stats.minesByStatus}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="status" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#ffc658" name="Rudnikov" />
+            </BarChart>
+          </ResponsiveContainer>
+        );
+
       case "minesByType":
-        return (stats.minesByType || []).map((entry, idx) => (
-          <div key={idx} className="mb-2 p-2 border rounded">
-            <p><strong>{entry.type}</strong>: {entry.count} rudnikov</p>
-          </div>
-        ));
+        return (
+          <ResponsiveContainer width="100%" height={400}>
+            <PieChart>
+              <Pie
+                data={stats.minesByType}
+                dataKey="count"
+                nameKey="type"
+                cx="50%"
+                cy="50%"
+                outerRadius={130}
+                label
+              >
+                {stats.minesByType.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        );
+
+      case "minesPerMunicipality":
+        return (
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={stats.minesPerMunicipality}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="municipality" angle={-45} fontSize={8} textAnchor="end" height={150} interval={0} />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#0088FE" name="Rudnikov" />
+            </BarChart>
+          </ResponsiveContainer>
+        );
+
+      case "minesPerYear":
+        return (
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={stats.minesPerYear}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="year"  fontSize={8}/>
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#8884d8" name="Rudnikov" />
+            </BarChart>
+          </ResponsiveContainer>
+        );
+
       default:
         return <p>Ni podatkov za izbrano statistiko.</p>;
     }
@@ -62,7 +168,7 @@ function Stats() {
   }
 
   return (
-    <div className="p-16 max-w-3xl mx-auto">
+    <div className="p-16 max-w-5xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Statistika rudnikov</h1>
 
       <div className="mb-8 flex flex-wrap gap-2 items-center justify-center">
@@ -81,7 +187,7 @@ function Stats() {
         ))}
       </div>
 
-      {renderStat()}
+      <div className="h-[400px]">{renderStat()}</div>
     </div>
   );
 }

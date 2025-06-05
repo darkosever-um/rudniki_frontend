@@ -24,8 +24,6 @@ function Login() {
     const data = await res.json();
     if (data.message !== "Napaka ob prijavi!") {
       userContext.setUserContext(data.message);
-      console.log("PRIJAVA") // @DELETE_ME
-      console.log(userContext) // @DELETE_ME
       navigate('/');
     } else {
       setUsername("");
@@ -37,6 +35,7 @@ function Login() {
   return (
     <div className="pt-16">
       {userContext.user ? <Navigate replace to="/Profil" /> : (
+        // Prikaz prijavnega modula
         <LoginModul
           username={username}
           password={password}

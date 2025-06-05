@@ -12,6 +12,7 @@ import Stats from './pages/Stats';
 import MyMine from './pages/MyMine';
 import Profile from './pages/Profile';
 import Animation from './pages/Animation';
+import Register from './pages/Register';
 
 function App() {
   
@@ -34,6 +35,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />}></Route>
               <Route path="/Login" element={<Login />}></Route>
+              <Route path="/Register" element={<Register />}></Route>
               <Route path="/LogOut" element={<LogOut />}></Route>
               <Route path="/Mine/:id" element={<Mine />}></Route>
               <Route path="/Statistika" element={<Stats />}></Route>

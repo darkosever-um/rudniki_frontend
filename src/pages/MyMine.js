@@ -12,10 +12,11 @@ function MyMine() {
     useEffect(() => {
         const fetchMine = async () => {
             try {
-            const res = await fetch(`http://localhost:8080/user/mines/${id}`);
+            const res = await fetch(`http://127.0.0.1:8080/user/mines/${id}`);
             if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             const data = await res.json();
-            setMines(data);
+            console.log('Mines fetched:', data);
+            setMines([data]);
             } catch (err) {
                 setError(err.message);
             }
@@ -28,24 +29,33 @@ function MyMine() {
     if (!mines) return <div className="p-16">Nalaganje podatkov...</div>;
 
     return (
-        <div className="p-16 max-w-3xl mx-auto">
+        <div className="p-8 mt-16 max-w-6xl mx-auto">
             {mines.length > 0 ? (
                 <div>
-                    <h1 className="text-2xl font-bold mb-4">Moji rudniki</h1>
-                    <ul className="list-disc pl-5">
-                        {mines.map((mine) => (
-                            <li key={mine._id.$oid} className="mb-2">
-                                <a href={`/Mine/${mine._id.$oid}`} className="text-blue-600 hover:underline">
-                                    {mine.name}
-                                </a>
-                            </li>
-                        ))}
-                    </ul>
+                <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">Moji rudniki</h1>
+                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                    {mines.map((mine) => (
+                    <a
+                        key={mine._id.$oid}
+                        href={`/Mine/${mine._id.$oid}`}
+                        className="block bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md hover:border-blue-400 transition duration-300"
+                    >
+                        <div className="mb-2 text-xl font-semibold text-gray-700 group-hover:text-blue-700">
+                        {mine.name}
+                        </div>
+                        <p className="text-sm text-gray-500">
+                        Klikni za ogled podrobnosti o rudniku →
+                        </p>
+                    </a>
+                    ))}
+                </div>
                 </div>
             ) : (
-                <div className="text-gray-600">Nimate nobenega rudnika.</div>
+                <div className="text-gray-600 text-center mt-20 text-lg">
+                Nimate nobenega rudnika.
+                </div>
             )}
-        </div>
+            </div>
     );
 }
 

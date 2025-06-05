@@ -1,54 +1,11 @@
-import React, { useState } from "react";
 import OurButton from "../components/OurButton";
 
-function Register() {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [birthDate, setBirthDate] = useState({ day: "", month: "", year: "" });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (password !== confirmPassword) {
-      console.error("Gesli se ne ujemata!");
-      return;
-    }
-
-    // Ko bo kredi BACKEND
-    /*
-    try {
-      const response = await axios.post("http://localhost:3001/register", {
-        username,
-        email,
-        password,
-        birthDate: `${birthDate.year}-${birthDate.month}-${birthDate.day}`,
-      });
-      console.log("Registracija uspešna:", response.data);
-    } catch (error) {
-      console.error("Napaka pri registraciji:", error);
-    }
-    */
-
-    console.log("Registracijski podatki:", {
-      username,
-      email,
-      password,
-      birthDate: `${birthDate.year}-${birthDate.month}-${birthDate.day}`,
-    });
-  };
-
-  // priprava podatkov za vnos datuma
-  const days = Array.from({ length: 31 }, (_, i) => i + 1);
-  const months = [
-    "Januar", "Februar", "Marec", "April", "Maj", "Junij",
-    "Julij", "Avgust", "September", "Oktober", "November", "December"
-  ];
-  const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
+function Register({ username, email, password, passwordSecond, birthDate, error, setUsername, setEmail, setPassword, setPasswordSecond, setBirthDate, onSubmit }) {
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-4">
+    <form onSubmit={onSubmit} className="max-w-sm mx-auto space-y-4">
+
+      {/* vpis: Uporabniško ime */}
       <input
         type="text"
         placeholder="Uporabniško ime"
@@ -57,6 +14,8 @@ function Register() {
         className="w-full p-2 border border-gray-300 rounded"
         required
       />
+
+      {/* vpis: E-pošta */}
       <input
         type="email"
         placeholder="Email"
@@ -65,6 +24,8 @@ function Register() {
         className="w-full p-2 border border-gray-300 rounded"
         required
       />
+
+      {/* vpis: Geslo 1 */}
       <input
         type="password"
         placeholder="Geslo"
@@ -73,53 +34,33 @@ function Register() {
         className="w-full p-2 border border-gray-300 rounded"
         required
       />
+
+      {/* vpis: Geslo 2 */}
       <input
         type="password"
         placeholder="Ponovi geslo"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
+        value={passwordSecond}
+        onChange={(e) => setPasswordSecond(e.target.value)}
         className="w-full p-2 border border-gray-300 rounded"
         required
       />
 
-      <div className="flex gap-2">
-        <select
-          value={birthDate.day}
-          onChange={(e) => setBirthDate({ ...birthDate, day: e.target.value })}
-          className="w-1/3 p-2 border border-gray-300 rounded"
-          required
-        >
-          <option value="">Dan</option>
-          {days.map((day) => (
-            <option key={day} value={day}>{day}</option>
-          ))}
-        </select>
+      {/* vpis: Rojstni datum */}
+      <label for="birthDate" className="block text-sm font-medium text-gray-700">Datum rojstva</label>
+      <input
+        id="birthDate"
+        type="date"
+        placeholder="Datum rojstva"
+        value={birthDate}
+        onChange={(e) => setBirthDate(e.target.value)}
+        className="w-full p-2 border border-gray-300 rounded"
+        required
+      />
 
-        <select
-          value={birthDate.month}
-          onChange={(e) => setBirthDate({ ...birthDate, month: e.target.value })}
-          className="w-1/3 p-2 border border-gray-300 rounded"
-          required
-        >
-          <option value="">Mesec</option>
-          {months.map((month, index) => (
-            <option key={index + 1} value={index + 1}>{month}</option>
-          ))}
-        </select>
+      {/* Prikaz napake */}
+      {error && <label className="text-red-500 block">{error}</label>}
 
-        <select
-          value={birthDate.year}
-          onChange={(e) => setBirthDate({ ...birthDate, year: e.target.value })}
-          className="w-1/3 p-2 border border-gray-300 rounded"
-          required
-        >
-          <option value="">Leto</option>
-          {years.map((year) => (
-            <option key={year} value={year}>{year}</option>
-          ))}
-        </select>
-      </div>
-
+      {/* Gumb shrani */}
       <OurButton type="submit" text={"Registracija"} classNameProps={"w-full"} variant="blue" />
     </form>
   );

@@ -19,7 +19,7 @@ function OurSearch() {
 
       console.log(`${url} - Rezultati iskanja:`, response.data);
 
-      if(response.data !== "Ni takih rudnikov"){
+      if(response.data !== "Ni takih rudnikov!"){
         const dataFromBackend = Object.values(response.data);
         setResults(dataFromBackend);
         console.log("Rezultati iskanja:", dataFromBackend); 

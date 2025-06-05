@@ -1,6 +1,9 @@
 import { useEffect, useContext, useState } from 'react';
 import { UserContext } from '../userContext';
 import { Navigate } from 'react-router-dom';
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies();
 
 function LogOut(){
     const userContext = useContext(UserContext); 
@@ -8,8 +11,8 @@ function LogOut(){
     useEffect(function(){
         const logout = async function(){
             userContext.setUserContext(null);
-            //const res = await fetch("http://localhost:3001/users/logout");
-            const res = true; // ko bo backend imel nek session se tu calla logout
+            cookies.remove('jwt', { path: '/' });
+            const res = true;
             setResTrue(res)
         }
         logout();

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import OurNotification from '../components/OurNotification';
+import { notificationContext } from '../notificationContext';
 
 let nextId = 1;
 
-function NotificationStack() {
+function NotificationStack({ children }) {
   const [notifications, setNotifications] = useState([]);
 
   const addNotification = (notif) => {
@@ -16,29 +17,19 @@ function NotificationStack() {
   };
 
   return (
-    <div className="fixed top-4 right-4 flex flex-col items-end z-50">
-      {notifications.map((n) => (
-        <OurNotification
-          key={n.id}
-          {...n}
-          onClose={() => removeNotification(n.id)}
-        />
-      ))}
+    <notificationContext.Provider value={{ addNotification }}>
+      {children}
 
-      {/* Testni button */}
-      <button
-        hidden
-        onClick={() =>
-          addNotification({
-            type: 'notification',
-            title: 'Manual close',
-            text: 'Click ✖ to dismiss this.',
-          })
-        }
-      >
-        Add Notification
-      </button>
-    </div>
+      <div className="fixed top-4 right-4 flex flex-col items-end z-50">
+        {notifications.map((n) => (
+          <OurNotification
+            key={n.id}
+            {...n}
+            onClose={() => removeNotification(n.id)}
+          />
+        ))}
+      </div>
+    </notificationContext.Provider>
   );
 }
 

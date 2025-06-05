@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { GoogleMap, useJsApiLoader, InfoWindow, Polygon } from '@react-google-maps/api';
 import OurButton from '../components/OurButton';
 import DrawIcon from '@mui/icons-material/Draw';
 import EditOffIcon from '@mui/icons-material/EditOff';
 import AddMineModal from './AddMineModal';
 import { mineStatuses } from '../constants/MineEnum';
+import { useNotification } from '../notificationContext';
+import { UserContext } from '../userContext';
 
 const libraries = ['drawing'];
 
@@ -26,6 +28,10 @@ const options = {
 };
 
 function Maps() {
+  // Uvoz komponent za notifikacije
+  const { addNotification } = useNotification();
+  const userContext = useContext(UserContext); 
+
   // Hramba rudnikov
   const [mines, setMines] = useState([]);
 
@@ -33,8 +39,11 @@ function Maps() {
   const [drawingMode, setDrawingMode] = useState(null);
   const [polygonPath, setPolygonPath] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [update, setUpdate] = useState(false);
+
   const drawingManagerRef = useRef(null);
   const mapRef = useRef(null);
+  const wsRef = useRef(null);
 
   // API google zemlejvid
   const { isLoaded } = useJsApiLoader({
@@ -54,14 +63,40 @@ function Maps() {
         const data = await res.json();
         const minesArray = Object.values(data);
         setMines(minesArray);
-        console.log('Mines fetched:', minesArray);
       } catch (error) {
         console.error('Error fetching mines:', error);
       }
     };
 
     fetchMines();
-  }, []);
+  }, [update]);
+
+  // WebSocket za prejemanje novih rudnikov
+  useEffect(() => {
+      const ws = new WebSocket('ws://127.0.0.1:8080/hooks/rudnikSubscribe');
+      wsRef.current = ws;
+
+      ws.onmessage = function(event) {
+        try {
+          const rudnik = JSON.parse(event.data);
+          setMines(prevMines => [...prevMines, rudnik]);
+          setUpdate(prev => !prev);
+          addNotification({
+            type: 'notification',
+            title: 'Nov rudnik',
+            text: 'Ime novega rudnika: '+rudnik.name+'.',
+          });
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
+        }
+    };
+
+    return () => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    };
+  }, [ mines, update, addNotification ]);
 
   function calculateCentroid(path) {
     let latSum = 0;
@@ -101,6 +136,18 @@ function Maps() {
 
       // Listener -> da konča risanje
       drawingManagerRef.current.addListener('polygoncomplete', (polygon) => {
+
+        if(!userContext.user) {
+          addNotification({
+            type: 'alert',
+            title: 'Napaka',
+            text: 'Niste prijavljeni.',
+          });
+          polygon.setMap(null);
+          stopDrawing();
+          return;
+        }
+
         const path = polygon.getPath().getArray().map((latlng) => ({
           lat: latlng.lat(),
           lng: latlng.lng(),
@@ -108,7 +155,7 @@ function Maps() {
         console.log('Poligon dokončan:', path);
         setPolygonPath(path);
         setIsModalOpen(true);
-        //polygon.setMap(null); // Odstrani poligon z zemljevida
+        polygon.setMap(null);
         stopDrawing();
       });
     }
@@ -121,10 +168,10 @@ function Maps() {
         drawingManagerRef.current = null;
       }
     };
-  }, [isLoaded, drawingMode]);
+  }, [isLoaded, drawingMode, addNotification, userContext.user]);
   const stopDrawing = () => {
     setDrawingMode(null);
-    setPolygonPath([]);
+    //setPolygonPath([]);
     if (drawingManagerRef.current) {
       drawingManagerRef.current.setDrawingMode(null);
     }
@@ -196,7 +243,6 @@ function Maps() {
         disabled={(isModalOpen)}
         
         onClickDo={() => {
-          console.log(drawingManagerRef)
           if (drawingMode) {
             stopDrawing();
           } else {
