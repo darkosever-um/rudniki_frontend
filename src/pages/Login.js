@@ -22,7 +22,9 @@ function Login() {
     });
 
     const data = await res.json();
-    if (data.message !== "Napaka ob prijavi!") {
+
+    console.log("Prijava:", data);
+    if (data.message !== "Napaka ob prijavi!" && data.message !== "Napaka ob prijavi: Nepravilni podatki") {
       userContext.setUserContext(data.message);
       navigate('/');
     } else {
