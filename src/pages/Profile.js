@@ -5,10 +5,12 @@ import { useNavigate } from 'react-router-dom';
 
 function Profile() {
     const navigate = useNavigate();
-    const [user, setUser] = useState([]);
-    const [error, setError] = useState(null);
     const userContext = useContext(UserContext);
     const id = userContext.user;
+
+    if(!id) navigate("/login");
+    const [user, setUser] = useState([]);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchMine = async () => {
