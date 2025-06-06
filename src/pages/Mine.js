@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import OurButton from '../components/OurButton';
 import OurModal from '../components/OurModal';
 import Plus from '@mui/icons-material/Add';
 import { infrastructureStatus, mineralGrades, mineralNames, mineStatuses, mineTypes, workerTypes } from "../constants/MineEnum.js";
+import { UserContext } from '../userContext.js';
+import Clear from '@mui/icons-material/Clear';
+
 
 function Mine() {
   const { id } = useParams();
@@ -17,10 +20,41 @@ function Mine() {
   const [formData, setFormData] = useState({ name: '', value: '' });
   const [loading, setLoading] = useState(false);
 
+  // za uporabnika
+  const userContext = useContext(UserContext);
+
   // funkcije za modal
   const openModal = (type) => {
     setModalType(type);
-    setFormData({ name: '', value: '' });
+    setFormData({});
+    if (type === 'worker') {
+      setFormData({
+        firstName: '',
+        lastName: '',
+        birthDate: '',
+        IDNumber: null,
+        type: 0,
+        salary: null
+      });
+    } else if (type === 'mineral') {
+      setFormData({
+        name: 0,
+        min: null,
+        max: null,
+        grade: 0
+      });
+    } else if (type === 'infrastructure') {
+      setFormData({
+        brand: '',
+        model: '',
+        IDNumber: null,
+        status: 0,
+        avgFuelConsumption: null,
+        lastMaintenance: null,
+        operatingHours: null,
+        kilometer: null
+      });
+    }
   };
   const closeModal = () => {
     setModalType(null);
@@ -63,7 +97,10 @@ function Mine() {
         const res = await fetch(`http://localhost:8080/mine/get/${id}`);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
-        setMine(data);
+        setMine({
+          ...data,
+          ownerId: data.ownerId,
+        });
       } catch (err) {
         setError(err.message);
       }
@@ -71,6 +108,40 @@ function Mine() {
 
     fetchMine();
   }, [id, update]);
+
+  async function delElement(path, IDNumber) {
+    console.log(path, IDNumber)
+    try {
+      var body = {}
+      if(path === "Infrastructure"){
+        body = {
+          id: id,
+            infrastructure: [
+              { IDNumber: IDNumber }
+            ]
+        }
+      }
+      else if(path === "Worker"){
+        body = {
+        id: id,
+          workers: [
+            { IDNumber: IDNumber }
+          ]
+        }
+      }
+
+      const res = await fetch(`http://127.0.0.1:8080/mine/delete${path}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      setUpdate(prev => !prev)
+    } catch (err) {
+      console.error('Napaka pri brisanju infrastrukture:', err);
+    }
+  }
 
   if (error) return <div className="p-16 text-red-600">{id} Napaka: {error}</div>;
   if (!mine) return <div className="p-16">Nalaganje podatkov...</div>;
@@ -82,67 +153,85 @@ function Mine() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <Stat label="Status" value={mineStatuses[mine.status]} />
         <Stat label="Tip" value={mineTypes[mine.type]} />
-        <Stat label="Minerali" value={mine.minerals ? (
-          <div>
-          {mine.minerals.length > 0 ? (
-            <div>
-            {mine.minerals.map((mineral, index) => (
-              <div key={index} className="relative inline-block group mr-2 mb-2">
-                <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
-                  {mineralNames[mineral.name]} ({mineral.grade ? mineralGrades[mineral.grade] : 'neznano'})
-                </span>
+        {mine && userContext.user === mine.ownerId.$oid ? (
+          <>
+            <Stat label="Minerali" value={mine.minerals ? (
+              <div>
+              {mine.minerals.length > 0 ? (
+                <div>
+                {mine.minerals.map((mineral, index) => (
+                  <div key={index} className="relative inline-block group mr-2 mb-2">
+                    <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
+                      {mineralNames[mineral.name]} ({mineralGrades[mineral.grade]})
+                    </span>
 
-                <div className="absolute z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap pointer-events-none">
-                  Min: {mineral.min ?? 'neznano'}, Max: {mineral.max ?? 'neznano'}
+                    <div className="absolute z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap pointer-events-none">
+                      Min: {mineral.min ?? 'neznano'}, Max: {mineral.max ?? 'neznano'}
+                    </div>
+                  </div>
+                ))}
                 </div>
+              ): 'ni dodanih mineralov '}
+                <button onClick={() => openModal('mineral')} className="p-0.5 rounded-3xl bg-blue-200 hover:bg-gray-300 text-blue-700 text-sm shadow-sm" ><Plus /></button>
+
               </div>
-            ))}
-            </div>
-          ): 'ni dodanih mineralov '}
-            <button onClick={() => openModal('mineral')} className="p-0.5 rounded-3xl bg-blue-200 hover:bg-gray-300 text-blue-700 text-sm shadow-sm" ><Plus /></button>
+            ) : '-'} />
+            <Stat label="Infrastruktura" value={mine.workers ? (
+              <div>
+                {mine.infrastructure.length > 0 ? (
+                  mine.infrastructure.map((inf, index) => (
+                    <div key={index} className="relative inline-block group mr-2 mb-2">
+                      <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
+                        {inf.brand} {inf.model} <Clear className='text-red-500 bg-red-100 rounded-3xl text-xs' onClick={() => delElement("Infrastructure", inf.IDNumber)} />
+                      </span>
 
-          </div>
-        ) : '-'} />
-        <Stat label="Infrastruktura" value={mine.workers ? (
-          <div>
-            {mine.infrastructure.length > 0 ? (
-              mine.infrastructure.map((inf, index) => (
-                <div key={index} className="relative inline-block group mr-2 mb-2">
-                  <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
-                    {inf.brand} {inf.model}
-                  </span>
+                      <div className="absolute z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap pointer-events-none">
+                        Prevoženih: <strong>{inf.kilometer ?? 'neznano'}km,</strong><br/>
+                        Delovnih ur: <strong>{inf.operatingHours.toFixed(2) ?? 'neznano'}</strong><br/>
+                        Tip: <strong>{infrastructureStatus[inf.status] ?? 'neznano'}</strong><br/>
+                      </div>
+                    </div>
+                  ))
+                ): 'ni infrastruktur '}
+                <button onClick={() => openModal('infrastructure')} className="p-0.5 rounded-3xl bg-blue-200 hover:bg-gray-300 text-blue-700 text-sm shadow-sm" ><Plus /></button>
+              </div>
+            ) : '-'} />
+            <Stat label="Delavci" value={mine.workers ? (
+              <div>
+                {mine.workers.length > 0 ? (
+                  mine.workers.map((worker, index) => (
+                    <div key={index} className="relative inline-block group mr-2 mb-2">
+                      <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
+                        {worker.firstName} {worker.lastName} <Clear className='text-red-500 bg-red-100 rounded-3xl text-xs' onClick={() => delElement("Worker", worker.IDNumber)} />
+                      </span>
 
-                  <div className="absolute z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap pointer-events-none">
-                    Prevoženih: <strong>{inf.kilometer ?? 'neznano'}km,</strong><br/>
-                    Delovnih ur: <strong>{inf.operatingHours.toFixed(2) ?? 'neznano'}</strong><br/>
-                    Tip: <strong>{infrastructureStatus[inf.status] ?? 'neznano'}</strong><br/>
-                  </div>
-                </div>
-              ))
-            ): 'ni infrastruktur '}
-            <button onClick={() => openModal('infrastructure')} className="p-0.5 rounded-3xl bg-blue-200 hover:bg-gray-300 text-blue-700 text-sm shadow-sm" ><Plus /></button>
-          </div>
-        ) : '-'} />
-        <Stat label="Delavci" value={mine.workers ? (
-          <div>
-            {mine.workers.length > 0 ? (
-              mine.workers.map((worker, index) => (
-                <div key={index} className="relative inline-block group mr-2 mb-2">
-                  <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
-                    {worker.firstName} {worker.lastName}
-                  </span>
-
-                  <div className="absolute z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap pointer-events-none">
-                    naziv: <strong>{worker.type ? workerTypes[worker.type] : 'neznano'}</strong>,<br/>
-                    rojen: <strong>{worker.birthDate ? new Date(worker.birthDate.$date).toLocaleDateString() : 'neznano'}</strong><br/>
-                    plača: <strong>{worker.salary.toFixed(2) ?? 'neznano'} EUR</strong>
-                  </div>
-                </div>
-              ))
-            ): 'ni dodanih delavcev '}
-            <button onClick={() => openModal('worker')} className="p-0.5 rounded-3xl bg-blue-200 hover:bg-gray-300 text-blue-700 text-sm shadow-sm" ><Plus /></button>
-          </div>
-        ) : '-'} />
+                      <div className="absolute z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap pointer-events-none">
+                        naziv: <strong>{worker.type ? workerTypes[worker.type] : 'neznano'}</strong>,<br/>
+                        rojen: <strong>{worker.birthDate ? new Date(worker.birthDate.$date).toLocaleDateString() : 'neznano'}</strong><br/>
+                        plača: <strong>{worker.salary.toFixed(2) ?? 'neznano'} EUR</strong>
+                      </div>
+                    </div>
+                  ))
+                ): 'ni dodanih delavcev '}
+                <button onClick={() => openModal('worker')} className="p-0.5 rounded-3xl bg-blue-200 hover:bg-gray-300 text-blue-700 text-sm shadow-sm" ><Plus /></button>
+              </div>
+            ) : '-'} />
+          </>
+        ) : (
+          <Stat label="Minerali" value={
+            (mine.minerals ? (
+              <div>
+                {mine.minerals.length > 0 ? (
+                  mine.minerals.map((mineral, index) => (
+                    <div key={index} className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm mr-2 mb-2">
+                      {mineralNames[mineral.name]} {mineralGrades[mineral.grade]}
+                    </div>
+                  ))
+                ) : 'ni dodanih mineralov '}
+              </div>
+            ) : '-')}
+          />
+        )}
       </div>
 
       <OurButton
@@ -270,7 +359,7 @@ function Mine() {
               <div>
                 <label className="block text-sm mb-1">Poraba goriva</label>
                 <input type="number" step="0.01" className="w-full border p-2 rounded"
-                  onChange={e => setFormData(prev => ({ ...prev, avgFuelConsumption: parseFloat(e.target.value) }))} />
+                  onChange={e => setFormData(prev => ({ ...prev, avgFuelConsumption: Number(parseFloat(e.target.value)) }))} />
               </div>
               <div>
                 <label className="block text-sm mb-1">Zadnje vzdrževanje</label>
@@ -283,12 +372,12 @@ function Mine() {
               <div>
                 <label className="block text-sm mb-1">Delovne ure</label>
                 <input type="number" step="0.01" className="w-full border p-2 rounded"
-                  onChange={e => setFormData(prev => ({ ...prev, operatingHours: parseFloat(e.target.value) }))} />
+                  onChange={e => setFormData(prev => ({ ...prev, operatingHours: Number(parseFloat(e.target.value)) }))} />
               </div>
               <div>
                 <label className="block text-sm mb-1">Kilometri</label>
-                <input type="number"  step="0.01" className="w-full border p-2 rounded"
-                  onChange={e => setFormData(prev => ({ ...prev, kilometer: Number(e.target.value) }))} />
+                <input type="number"  className="w-full border p-2 rounded"
+                  onChange={e => setFormData(prev => ({ ...prev, kilometer: Number(parseInt(e.target.value)) }))} />
               </div>
             </>
           )}
