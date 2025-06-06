@@ -13,6 +13,8 @@ function Mine() {
   const [mine, setMine] = useState(null);
   const [update, setUpdate] = useState(null);
   const [error, setError] = useState(null);
+  const [editing, setEditing] = useState(false);
+  const [editData, setEditData] = useState({ name: '', municipality: '', status: 0, type: 0 });
   const navigate = useNavigate();
 
   // za modal
@@ -101,6 +103,11 @@ function Mine() {
           ...data,
           ownerId: data.ownerId,
         });
+        setEditData({
+          name: data.name,
+          status: data.status,
+          type: data.type
+        });
       } catch (err) {
         setError(err.message);
       }
@@ -110,7 +117,6 @@ function Mine() {
   }, [id, update]);
 
   async function delElement(path, IDNumber) {
-    console.log(path, IDNumber)
     try {
       var body = {}
       if(path === "Infrastructure"){
@@ -150,9 +156,76 @@ function Mine() {
     <div className="p-16 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">{mine.name}</h1>
 
+      {mine && userContext.user === mine.ownerId.$oid && !editing && (
+        <button onClick={() => setEditing(true)} className="mb-4 px-4 py-2 bg-blue-400 hover:bg-blue-500 rounded-3xl text-white">
+          Uredi osnovne podatke
+        </button>
+      )}
+      {editing && (
+        <div className="mt-4 flex gap-4">
+          <button
+            onClick={async () => {
+              try {
+                await fetch("http://127.0.0.1:8080/mine/update", {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ id: mine._id.$oid, ...editData }),
+                });
+                setEditing(false);
+                setUpdate(Date.now());
+              } catch (err) {
+                console.error("Napaka pri posodabljanju rudnika:", err);
+              }
+            }}
+            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white  rounded-3xl"
+          >
+            Shrani spremembe
+          </button>
+          <button onClick={() => setEditing(false)} className="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white  rounded-3xl">
+            Prekliči
+          </button>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <Stat label="Status" value={mineStatuses[mine.status]} />
-        <Stat label="Tip" value={mineTypes[mine.type]} />
+        
+        {editing ? (
+          <>
+            <div>
+              <label>Status</label>
+              <select value={editData.status} onChange={(e) => setEditData({ ...editData, status: parseInt(e.target.value) })} className="w-full border rounded p-2">
+                {Object.entries(mineStatuses).map(([key, value]) => (
+                  <option key={key} value={key}>{value}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label>Tip</label>
+              <select value={editData.type} onChange={(e) => setEditData({ ...editData, type: parseInt(e.target.value) })} className="w-full border rounded p-2">
+                {Object.entries(mineTypes).map(([key, value]) => (
+                  <option key={key} value={key}>{value}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label>Ime rudnika</label>
+              <input type="text" value={editData.name} onChange={(e) => setEditData({ ...editData, name: e.target.value })} className="w-full border rounded p-2" />
+            </div>
+            <div>
+              <label>Občina</label>
+              <input type="text" value={editData.municipality} onChange={(e) => setEditData({ ...editData, municipality: e.target.value })} className="w-full border rounded p-2" />
+            </div>
+          </>
+        ) : (
+          <>
+            <Stat label="Status" value={mineStatuses[mine.status]} />
+            <Stat label="Tip" value={mineTypes[mine.type]} />
+            <Stat label="Ime rudnika" value={mine.name} />
+            <Stat label="Občina" value={mine.municipality} />
+            <hr/><hr/>
+          </>
+        )}
+
         {mine && userContext.user === mine.ownerId.$oid ? (
           <>
             <Stat label="Minerali" value={mine.minerals ? (

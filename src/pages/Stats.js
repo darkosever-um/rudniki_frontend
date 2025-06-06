@@ -28,7 +28,6 @@ function Stats() {
         data.minesPerYear.sort((a, b) => a.year - b.year);
 
         setStats(data);
-        console.log("Statistics fetched:", data);
       } catch (err) {
         setError(err.message);
       }
