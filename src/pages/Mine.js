@@ -117,7 +117,6 @@ function Mine() {
   }, [id, update]);
 
   async function delElement(path, IDNumber) {
-    console.log(path, IDNumber)
     try {
       var body = {}
       if(path === "Infrastructure"){
@@ -223,6 +222,7 @@ function Mine() {
             <Stat label="Tip" value={mineTypes[mine.type]} />
             <Stat label="Ime rudnika" value={mine.name} />
             <Stat label="Občina" value={mine.municipality} />
+            <hr/><hr/>
           </>
         )}
 

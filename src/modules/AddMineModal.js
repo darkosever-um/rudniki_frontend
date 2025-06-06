@@ -83,8 +83,6 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
       salary: Number(parseFloat(w.salary).toFixed(2))
     }));
 
-    console.log("Podatki za pošiljanje:", JSON.stringify(data));
-
     // Pošiljanje podatkov na strežnik
     try {
       const response = await fetch("http://127.0.0.1:8080/mine/save", {
@@ -120,6 +118,12 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
         <div className="space-y-1">
           <label className="block font-semibold">Ime rudnika:</label>
           <input name="name" type="text" placeholder="Ime rudnika" required className="w-full p-1 bg-gray-100" />
+        </div>
+
+        {/* Občina rudnika */}
+        <div className="space-y-1">
+          <label className="block font-semibold">Ime rudnika:</label>
+          <input name="municipality" type="text" placeholder="Občina" required className="w-full p-1 bg-gray-100" />
         </div>
 
         {/* Rudnikov status */}
