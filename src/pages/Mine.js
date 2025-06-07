@@ -168,6 +168,7 @@ function Mine() {
               try {
                 await fetch("http://127.0.0.1:8080/mine/update", {
                   method: "PUT",
+                  credentials: "include",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ id: mine._id.$oid, ...editData }),
                 });
