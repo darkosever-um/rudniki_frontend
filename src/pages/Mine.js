@@ -108,6 +108,8 @@ function Mine() {
           status: data.status,
           type: data.type
         });
+
+        console.log(data)
       } catch (err) {
         setError(err.message);
       }
@@ -166,7 +168,7 @@ function Mine() {
 
   return (
     <div className="p-16 max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">{mine.name}</h1>
+      <h1 className="text-3xl font-bold">{mine.name}</h1>
 
       {mine && userContext.user === mine.ownerId.$oid && !editing && (
         <>
@@ -179,11 +181,14 @@ function Mine() {
           <button
             onClick={async () => {
               try {
-                await fetch("http://127.0.0.1:8080/mine/update", {
+                const res = await fetch("http://127.0.0.1:8080/mine/update", {
                   method: "PUT",
+                  credentials: "include",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ id: mine._id.$oid, ...editData }),
                 });
+                const data = await res.json();
+                console.log(data);
                 setEditing(false);
                 setUpdate(Date.now());
               } catch (err) {
@@ -319,6 +324,9 @@ function Mine() {
           />
         )}
       </div>
+      
+      {mine.created.$date !== mine.modified.$date ? (<p className='font-black text-gray-400'>Posodobljen {new Date(mine.modified.$date).toLocaleDateString()}</p>) : (<></>)}
+      <p className='mb-6 font-black text-gray-400'>Ustvarjen {new Date(mine.created.$date).toLocaleDateString()}</p>
 
       <OurButton
         text="Nazaj na zemljevid"
