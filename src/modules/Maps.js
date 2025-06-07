@@ -153,7 +153,13 @@ function Maps() {
           lat: latlng.lat(),
           lng: latlng.lng(),
         }));
-        console.log('Poligon dokončan:', path);
+        // if (
+        //   path.length > 0 &&
+        //   (path[0].lat !== path[path.length - 1].lat || path[0].lng !== path[path.length - 1].lng)
+        // ) {
+        //   path.push({ ...path[0] });
+        // }
+        //console.log('Poligon dokončan:', path);
         setPolygonPath(path);
         setIsModalOpen(true);
         polygon.setMap(null);
