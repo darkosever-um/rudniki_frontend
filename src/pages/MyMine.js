@@ -1,13 +1,20 @@
 import React, { useEffect, useState, useContext } from 'react';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../userContext';
 
 function MyMine() {
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
     const [mines, setMines] = useState([]);
     const [error, setError] = useState(null);
     const userContext = useContext(UserContext);
+
     const id = userContext.user;
+
+    useEffect(() => {
+        if (!id) {
+            navigate("/login");
+        }
+    }, [id, navigate]);
 
     useEffect(() => {
         const fetchMine = async () => {

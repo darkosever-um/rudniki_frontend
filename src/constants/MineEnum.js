@@ -1,7 +1,7 @@
 export const infrastructureStatus = [
-    "aktivna",         // active
-    "neaktivna",       // idle
-    "pokvarjena",      // broken
+    "aktiven",         // active
+    "neaktiven",       // idle
+    "pokvarjen",      // broken
     "v popravilu",     // inrepair
     "izven uporabe",   // outofservice
     "čiščenje",        // cleaning
@@ -9,9 +9,9 @@ export const infrastructureStatus = [
 ];
 
 export const mineStatuses = [
-    "aktivna",         // active
-    "neaktivna",       // idle
-    "zaprta",          // closed
+    "aktiven",         // active
+    "neaktiven",       // idle
+    "zaprt",          // closed
     "v izgradnji"      // building
 ];
 
@@ -24,9 +24,9 @@ export const mineTypes = [
 ];
 
 export const mineralGrades = [
-    "nizka",           // low
-    "srednja",         // medium
-    "visoka",          // high
+    "nizko",           // low
+    "srednje",         // medium
+    "visoko",          // high
     "nedoločeno"       // undefined
 ];
 

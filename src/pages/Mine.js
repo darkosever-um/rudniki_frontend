@@ -324,12 +324,14 @@ function Mine() {
       </div>
       
       {mine.created && mine.modified && mine.created.$date !== mine.modified.$date ? (<p className='font-black text-gray-400'>Posodobljen {new Date(mine.modified.$date).toLocaleDateString()}</p>) : (<></>)}
-      <p className='mb-6 font-black text-gray-400'>Ustvarjen: {mine.created ? new Date(mine.created.$date).toLocaleDateString() : "Ni navedeno."}</p>
+      <p className='font-black text-gray-400'>Ustvarjen: {mine.created ? new Date(mine.created.$date).toLocaleDateString() : (mine.startYear ? mine.startYear : "Ni navedeno.")}</p>
+      {mine.status === 2 && (<p className='font-black text-gray-400'>Zaprt: {mine.endYear}</p>)}
 
       <OurButton
         text="Nazaj na zemljevid"
         onClickDo={() => navigate('/')}
         variant='blue'
+        classNameProps='mt-6'
       />
 
       <OurModal isOpen={modalType !== null} onClose={closeModal}>

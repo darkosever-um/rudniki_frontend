@@ -8,7 +8,11 @@ function Profile() {
     const userContext = useContext(UserContext);
     const id = userContext.user;
 
-    if (!id) navigate("/login");
+    useEffect(() => {
+        if (!userContext.user) {
+            navigate("/login");
+        }
+    }, [userContext.user, navigate]);
 
     const [user, setUser] = useState(null);
     const [error, setError] = useState(null);

@@ -46,7 +46,7 @@ function Register({ username, email, password, passwordSecond, birthDate, error,
       />
 
       {/* vpis: Rojstni datum */}
-      <label for="birthDate" className="block text-sm font-medium text-gray-700">Datum rojstva</label>
+      <label htmlFor="birthDate" className="block text-sm font-medium text-gray-700">Datum rojstva</label>
       <input
         id="birthDate"
         type="date"

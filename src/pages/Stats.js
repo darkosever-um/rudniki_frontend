@@ -25,7 +25,7 @@ function Stats() {
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
 
-        data.minesPerYear.sort((a, b) => a.year - b.year);
+        data.minesPerYear.sort((a, b) => a.startYear - b.startYear);
 
         setStats(data);
       } catch (err) {
@@ -45,7 +45,7 @@ function Stats() {
     { key: "minesPerYear", label: "Rudniki po letih" },
   ];
 
-  const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#00C49F", "#FFBB28", "#0088FE"];
+  const COLORS = ["#2463eb", "#82ca9d", "#ffc658", "#ff8042", "#00C49F", "#FFBB28", "#0088FE"];
 
   const renderStat = () => {
     if (!stats) return <p>Nalaganje podatkov...</p>;
@@ -53,25 +53,22 @@ function Stats() {
     switch (selectedStat) {
       case "minesByMineral":
         return (
-          <ResponsiveContainer width="100%" height={520}>
-            <PieChart>
-              <Pie
-                data={stats.minesByMineral}
-                dataKey="count"
-                nameKey="mineral"
-                cx="50%"
-                cy="50%"
-                outerRadius={130}
-                label
-              >
-                {stats.minesByMineral.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          <div className="bg-white shadow rounded-lg overflow-hidden">
+            <div className="bg-gray-100 px-4 py-2 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              Število rudnikov po mineralih
+            </div>
+            <div className="divide-y divide-gray-200">
+              {stats.minesByMineral.map((stat) => (
+                <div
+                  key={stat.mineral}
+                  className="flex items-center justify-between px-4 py-3 text-sm text-gray-800 hover:bg-gray-50 transition"
+                >
+                  <span>{stat.mineral}</span>
+                  <span className="font-medium text-gray-900">{stat.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         );
 
       case "minesByMineralGrade":
@@ -83,7 +80,7 @@ function Stats() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="count" fill="#82ca9d" name="Rudnikov" />
+              <Bar dataKey="count" fill="#2463eb" name="Rudnikov" />
             </BarChart>
           </ResponsiveContainer>
         );
@@ -97,7 +94,7 @@ function Stats() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="count" fill="#ffc658" name="Rudnikov" />
+              <Bar dataKey="count" fill="#2463eb" name="Rudnikov" />
             </BarChart>
           </ResponsiveContainer>
         );
@@ -127,16 +124,22 @@ function Stats() {
 
       case "minesPerMunicipality":
         return (
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={stats.minesPerMunicipality}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="municipality" angle={-45} fontSize={8} textAnchor="end" height={150} interval={0} />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="count" fill="#0088FE" name="Rudnikov" />
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="bg-white shadow rounded-lg overflow-hidden">
+            <div className="bg-gray-100 px-4 py-2 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              Število rudnikov po občinah
+            </div>
+            <div className="divide-y divide-gray-200">
+              {stats.minesPerMunicipality.map((stat) => (
+                <div
+                  key={stat.municipality}
+                  className="flex items-center justify-between px-4 py-3 text-sm text-gray-800 hover:bg-gray-50 transition"
+                >
+                  <span>{stat.municipality}</span>
+                  <span className="font-medium text-gray-900">{stat.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         );
 
       case "minesPerYear":
@@ -144,11 +147,11 @@ function Stats() {
           <ResponsiveContainer width="100%" height={400}>
             <BarChart data={stats.minesPerYear}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="year"  fontSize={8}/>
+              <XAxis dataKey="startYear"  fontSize={8}/>
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="count" fill="#8884d8" name="Rudnikov" />
+              <Bar dataKey="count" fill="#2463eb" name="Rudnikov" />
             </BarChart>
           </ResponsiveContainer>
         );
