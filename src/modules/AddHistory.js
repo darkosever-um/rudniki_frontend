@@ -8,9 +8,6 @@ import { UserContext } from '../userContext';
 function AddHistory({minerals, mineId}) {
   const [quantities, setQuantities] = useState([]);
 
-  console.log(mineId)
-
-
   const handleChange = (mineral, value) => {
     setQuantities((prev) => {
       const existing = prev.find((m) => m.name === mineral.name);

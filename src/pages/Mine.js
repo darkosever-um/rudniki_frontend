@@ -7,6 +7,7 @@ import { infrastructureStatus, mineralGrades, mineralNames, mineStatuses, mineTy
 import { UserContext } from '../userContext.js';
 import Clear from '@mui/icons-material/Clear';
 import AddHistory from '../modules/AddHistory.js';
+import Logs from '../modules/Logs.js'
 
 
 function Mine() {
@@ -328,8 +329,13 @@ function Mine() {
       {mine.created && mine.modified && mine.created.$date !== mine.modified.$date ? (<p className='font-black text-gray-400'>Posodobljen {new Date(mine.modified.$date).toLocaleDateString()}</p>) : (<></>)}
       <p className='font-black text-gray-400'>Ustvarjen: {mine.created ? new Date(mine.created.$date).toLocaleDateString() : (mine.startYear ? mine.startYear : "Ni navedeno.")}</p>
       {mine.status === 2 && (<p className='font-black text-gray-400'>Zaprt: {mine.endYear}</p>)}
-      
-      {mine.ownerId && mine && userContext.user === mine.ownerId.$oid && <AddHistory minerals={mine.minerals} mineId={mine._id.$oid}/>}
+
+      {mine.ownerId && mine && userContext.user === mine.ownerId.$oid && 
+      <>
+        <AddHistory minerals={mine.minerals} mineId={mine._id.$oid}/>
+        <Logs mineId={mine._id.$oid}/>
+      </>
+      }
 
       <OurButton
         text="Nazaj na zemljevid"
