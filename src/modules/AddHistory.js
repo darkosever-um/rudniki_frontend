@@ -6,26 +6,33 @@ import { mineralNames } from "../constants/MineEnum.js";
 import { UserContext } from '../userContext';
 
 function AddHistory({minerals, mineId}) {
-    const [quantities, setQuantities] = useState({});
+  const [quantities, setQuantities] = useState([]);
 
-    console.log(mineId)
+  console.log(mineId)
+
 
   const handleChange = (mineral, value) => {
-    setQuantities((prev) => ({
-      ...prev,
-      [mineral]: value,
-    }));
+    setQuantities((prev) => {
+      const existing = prev.find((m) => m.name === mineral.name);
+      if (existing) {
+        return prev.map((m) =>
+          m.name === mineral.name ? { ...m, quantity: parseFloat(value) } : m
+        );
+      } else {
+        return [...prev, { name: mineral.name, quantity: parseFloat(value) }];
+      }
+    });
   };
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch(`/mine/addHistory/${mineId}`, {
+      const response = await fetch(`http://127.0.0.1:8080/mine/addHistory/${mineId}`, {
         method: 'POST',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(quantities),
+        body: JSON.stringify({ minerals: quantities }),
       });
 
       if (response.ok) {
@@ -49,8 +56,8 @@ function AddHistory({minerals, mineId}) {
           <input
             type="number"
             min="0"
-            value={quantities[mineral] || ''}
             onChange={(e) => handleChange(mineral, e.target.value)}
+            value={quantities.find((q) => q.name === mineral.name)?.quantity || ''}
             className="border border-gray-300 rounded-lg px-2 py-1 text-right"
           />
         </div>
