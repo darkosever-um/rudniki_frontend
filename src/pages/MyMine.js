@@ -1,22 +1,33 @@
 import React, { useEffect, useState, useContext } from 'react';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../userContext';
 
 function MyMine() {
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
     const [mines, setMines] = useState([]);
     const [error, setError] = useState(null);
     const userContext = useContext(UserContext);
+
     const id = userContext.user;
+
+    useEffect(() => {
+        if (!id) {
+            navigate("/login");
+        }
+    }, [id, navigate]);
 
     useEffect(() => {
         const fetchMine = async () => {
             try {
             const res = await fetch(`http://127.0.0.1:8080/user/mines/${id}`);
             if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-            const data = await res.json();
-            console.log('Mines fetched:', data);
-            setMines(Object.values(data));
+            var data = await res.json();
+            data = Object.values(data);
+            if(data[0] === "Prijavljeni uporabnik nima rudnikov!"){
+                setMines(Object.values({}));
+            }else{
+                setMines(Object.values(data));
+            }
             } catch (err) {
                 setError(err.message);
             }

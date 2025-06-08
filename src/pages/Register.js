@@ -26,14 +26,16 @@ function Register() {
         method: "POST",
         credentials: "include",
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, birthDate, password })
+        body: JSON.stringify({ username, email, birthDate: new Date(birthDate).getTime(), password })
       });
 
       const data = await res.json();
-      if (data.message !== "Napaka ob registraciji!") {
+
+      if (data.message !== "Napaka ob registraciji!" && data.message !== "Napaka ob prijavi: Nepravilni podatki" && data.message !== "Napaka pri dodajanju uporabnika!") {
         userContext.setUserContext(data.message);
         navigate('/');
       } else {
+        alert(data.message);
         setUsername("");
         setPassword("");
         setPasswordSecond("");

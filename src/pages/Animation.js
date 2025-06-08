@@ -57,8 +57,7 @@ function Animation() {
         setIsModalOpen(false);
         return;
       }
-
-      console.log('Pridobljeni rudniki:', grouped);
+      
       setMinesByYear(grouped);
       setIsModalOpen(false);
       setIsAnimating(true);

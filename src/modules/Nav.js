@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import OurButton from '../components/OurButton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import SettingsIcon from '@mui/icons-material/Settings';
+// import SettingsIcon from '@mui/icons-material/Settings';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import OurSearch from '../components/OurSearch';
 import { UserContext } from '../userContext';
@@ -32,7 +32,7 @@ function Nav() {
           <MenuOpenIcon/>
         </button>
         <div className="flex items-center gap-4">
-          <button className="text-2xl" aria-label="Nastavitve"><SettingsIcon/></button>
+          {/* <button className="text-2xl" aria-label="Nastavitve"><SettingsIcon/></button> */}
           <button className="text-2xl" aria-label="Profil">
             <Link className="block hover:underline" to='/login'><AccountCircleIcon/></Link>
           </button>
@@ -61,16 +61,16 @@ function Nav() {
               <span className="text-xs opacity-30 font-bold mb-4">NASTAVITVE</span>
               <ul className="space-y-2">
                 <li><a href="/profil" className="block hover:underline">Profil</a></li>
-                <li><a href="/nastavitve-videza" className="block hover:underline">Izgled aplikacije</a></li>
+                {/* <li><a href="/nastavitve-videza" className="block hover:underline">Izgled aplikacije</a></li> */}
               </ul>
 
               <br/>
 
-              <span className="text-xs opacity-30 font-bold mb-4">POMOČ</span>
+              {/* <span className="text-xs opacity-30 font-bold mb-4">POMOČ</span>
               <ul className="space-y-2">
                 <li><a href="/faq" className="block hover:underline">FAQ</a></li>
                 <li><a href="/kontakt" className="block hover:underline">Kontakt</a></li>
-              </ul>
+              </ul> */}
             </div>
 
             <div>

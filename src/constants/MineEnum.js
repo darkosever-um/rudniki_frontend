@@ -1,114 +1,119 @@
 export const infrastructureStatus = [
-    "active",
-    "idle",
-    "broken",
-    "inrepair",
-    "outofservice",
-    "cleaning",
-    "undefined"
+    "aktiven",         // active
+    "neaktiven",       // idle
+    "pokvarjen",      // broken
+    "v popravilu",     // inrepair
+    "izven uporabe",   // outofservice
+    "čiščenje",        // cleaning
+    "nedoločeno"       // undefined
 ];
+
 export const mineStatuses = [
-    "active",
-    "idle",
-    "closed",
-    "building"
+    "aktiven",         // active
+    "neaktiven",       // idle
+    "zaprt",          // closed
+    "v izgradnji"      // building
 ];
+
 export const mineTypes = [
-    "surface",
-    "underground",
-    "placer",
-    "insitu",
-    "deepsea"
+    "površinski",      // surface
+    "podzemni",        // underground
+    "naplavni",        // placer
+    "in-situ",         // insitu
+    "globokomorski"    // deepsea
 ];
+
 export const mineralGrades = [
-    "low",
-    "medium",
-    "high",
-    "undefined"
+    "nizko",           // low
+    "srednje",         // medium
+    "visoko",          // high
+    "nedoločeno"       // undefined
 ];
+
 export const workerTypes = [
-    "miner",
-    "machineoperator",
-    "blastingtechnician",
-    "maintenanceworker",
-    "surveyor",
-    "geologist",
-    "miningengineer",
-    "safetytechnician",
-    "ventilationengineer",
-    "hydrologist",
-    "electrictian",
-    "supervisor",
-    "laboratorytechnician",
-    "director",
-    "productionmanager",
-    "humanresources",
-    "accountant",
-    "undefined"
+    "rudar",                    // miner
+    "upravljalec strojev",     // machineoperator
+    "tehnik za razstreljevanje", // blastingtechnician
+    "vzdrževalec",             // maintenanceworker
+    "geodet",                  // surveyor
+    "geolog",                  // geologist
+    "rudarski inženir",        // miningengineer
+    "varnostni tehnik",        // safetytechnician
+    "inženir za prezračevanje", // ventilationengineer
+    "hidrolog",                // hydrologist
+    "električar",              // electrictian
+    "nadzornik",               // supervisor
+    "laboratorijski tehnik",   // laboratorytechnician
+    "direktor",                // director
+    "vodja proizvodnje",       // productionmanager
+    "kadrovski delavec",       // humanresources
+    "računovodja",             // accountant
+    "nedoločeno"               // undefined
 ];
+
 export const mineralNames = [
-  "name undefined",
-  "halkopirit",
-  "bornit",
-  "halkozin",
-  "pirit",
-  "markazit",
-  "sfalerit",
-  "galenit",
-  "cinabarit",
-  "wulfenit",
-  "barit",
-  "srebronosni galenit",
-  "samorodno zivo srebro",
-  "antimonit",
-  "siderit",
-  "hematit",
-  "magnetit",
-  "limonit",
-  "psilomelan",
-  "piroluzit",
-  "uranova smola",
-  "coffinit",
-  "boksit",
-  "samorodno zlato",
-  "tennantit",
-  "malahit",
-  "kuprit",
-  "azurit",
-  "realgar",
-  "torijevi minerali",
-  "clay",
-  "gravel",
-  "limestone",
-  "granite",
-  "marble",
-  "basalt",
-  "diorite",
-  "quartz",
-  "slate",
-  "pegmatite",
-  "gypsum",
-  "halite",
-  "sulfur",
-  "fluorite",
-  "kaolin",
-  "feldspar",
-  "mica",
-  "calcite",
-  "dolomite",
-  "serpentine",
-  "chlorite",
-  "kyanite",
-  "corundum",
-  "emerald",
-  "ruby",
-  "sapphire",
-  "opal",
-  "turquoise",
-  "graphite",
-  "plagioclase",
-  "andalusite",
-  "scapolite",
-  "tourmaline",
-  "olivine"
+  "ime nedoločeno",                // name undefined
+  "halkopirit",                    // halkopirit
+  "bornit",                        // bornit
+  "halkozin",                      // halkozin
+  "pirit",                         // pirit
+  "markazit",                      // markazit
+  "sfalerit",                      // sfalerit
+  "galenit",                       // galenit
+  "cinabarit",                     // cinabarit
+  "vulfenit",                      // wulfenit
+  "barit",                         // barit
+  "srebronosni galenit",           // srebronosni galenit
+  "samorodno živo srebro",         // samorodno zivo srebro
+  "antimonit",                     // antimonit
+  "siderit",                       // siderit
+  "hematit",                       // hematit
+  "magnetit",                      // magnetit
+  "limonit",                       // limonit
+  "psilomelan",                    // psilomelan
+  "piroluzit",                     // piroluzit
+  "uranova smola",                // uranova smola
+  "kofinit",                       // coffinit
+  "boksit",                        // boksit
+  "samorodno zlato",              // samorodno zlato
+  "tennantit",                    // tennantit
+  "malahit",                      // malahit
+  "kuprit",                       // kuprit
+  "azurit",                       // azurit
+  "realgar",                      // realgar
+  "torijevi minerali",            // torijevi minerali
+  "glina",                        // clay
+  "prodniki",                     // gravel
+  "apnenec",                      // limestone
+  "granit",                       // granite
+  "marmor",                       // marble
+  "bazalt",                       // basalt
+  "diorit",                       // diorite
+  "kremen",                       // quartz
+  "skrilavec",                    // slate
+  "pegmatit",                     // pegmatite
+  "sadra",                        // gypsum
+  "halit",                        // halite
+  "žveplo",                       // sulfur
+  "fluorit",                      // fluorite
+  "kaolin",                       // kaolin
+  "glinenec",                     // feldspar
+  "sljuda",                       // mica
+  "kalcit",                       // calcite
+  "dolomit",                      // dolomite
+  "serpentinit",                  // serpentine
+  "klorit",                       // chlorite
+  "kianit",                       // kyanite
+  "korund",                       // corundum
+  "smaragd",                      // emerald
+  "rubin",                        // ruby
+  "safir",                        // sapphire
+  "opal",                         // opal
+  "turkiz",                       // turquoise
+  "grafit",                       // graphite
+  "plagioklaz",                   // plagioclase
+  "andaluzit",                    // andalusite
+  "skapolit",                     // scapolite
+  "turmalin",                     // tourmaline
+  "olivin"                        // olivine
 ];

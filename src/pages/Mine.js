@@ -108,8 +108,6 @@ function Mine() {
           status: data.status,
           type: data.type
         });
-
-        console.log(data)
       } catch (err) {
         setError(err.message);
       }
@@ -170,7 +168,7 @@ function Mine() {
     <div className="p-16 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold">{mine.name}</h1>
 
-      {mine && userContext.user === mine.ownerId.$oid && !editing && (
+      {mine.ownerId && mine && userContext.user === mine.ownerId.$oid && !editing && (
         <>
           <OurButton onClickDo={() => setEditing(true)} variant="bule" text={"Uredi osnovne podatke"} classNameProps='mr-2 mb-2'/>
           <OurButton onClickDo={() => deleteMine()} variant='red' text={"Izbriši rudnik"}/>
@@ -244,7 +242,7 @@ function Mine() {
           </>
         )}
 
-        {mine && userContext.user === mine.ownerId.$oid ? (
+        {mine.ownerId && mine && userContext.user === mine.ownerId.$oid ? (
           <>
             <Stat label="Minerali" value={mine.minerals ? (
               <div>
@@ -298,7 +296,7 @@ function Mine() {
 
                       <div className="absolute z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap pointer-events-none">
                         naziv: <strong>{worker.type ? workerTypes[worker.type] : 'neznano'}</strong>,<br/>
-                        rojen: <strong>{worker.birthDate ? new Date(worker.birthDate.$date).toLocaleDateString() : 'neznano'}</strong><br/>
+                        rojen: <strong>{worker.birthDate && worker.birthDate ? new Date(worker.birthDate.$date).toLocaleDateString() : 'neznano'}</strong><br/>
                         plača: <strong>{worker.salary.toFixed(2) ?? 'neznano'} EUR</strong>
                       </div>
                     </div>
@@ -325,13 +323,15 @@ function Mine() {
         )}
       </div>
       
-      {mine.created.$date !== mine.modified.$date ? (<p className='font-black text-gray-400'>Posodobljen {new Date(mine.modified.$date).toLocaleDateString()}</p>) : (<></>)}
-      <p className='mb-6 font-black text-gray-400'>Ustvarjen {new Date(mine.created.$date).toLocaleDateString()}</p>
+      {mine.created && mine.modified && mine.created.$date !== mine.modified.$date ? (<p className='font-black text-gray-400'>Posodobljen {new Date(mine.modified.$date).toLocaleDateString()}</p>) : (<></>)}
+      <p className='font-black text-gray-400'>Ustvarjen: {mine.created ? new Date(mine.created.$date).toLocaleDateString() : (mine.startYear ? mine.startYear : "Ni navedeno.")}</p>
+      {mine.status === 2 && (<p className='font-black text-gray-400'>Zaprt: {mine.endYear}</p>)}
 
       <OurButton
         text="Nazaj na zemljevid"
         onClickDo={() => navigate('/')}
         variant='blue'
+        classNameProps='mt-6'
       />
 
       <OurModal isOpen={modalType !== null} onClose={closeModal}>

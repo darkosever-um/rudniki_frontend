@@ -2,6 +2,7 @@ import './App.css';
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { UserContext } from './userContext';
+import NotificationStack from './modules/NotificationStack';
 
 import Nav from './modules/Nav';
 import Home from './pages/Home';
@@ -31,18 +32,20 @@ function App() {
         }}
       >
         <div className="App">
-          <Nav/>
-            <Routes>
-              <Route path="/" element={<Home />}></Route>
-              <Route path="/Login" element={<Login />}></Route>
-              <Route path="/Register" element={<Register />}></Route>
-              <Route path="/LogOut" element={<LogOut />}></Route>
-              <Route path="/Mine/:id" element={<Mine />}></Route>
-              <Route path="/Statistika" element={<Stats />}></Route>
-              <Route path="/Rudniki" element={<MyMine />}></Route>
-              <Route path="/Profil" element={<Profile />}></Route>
-              <Route path="/Animacija" element={<Animation />}></Route>
-            </Routes>
+          <NotificationStack>
+            <Nav/>
+              <Routes>
+                <Route path="/" element={<Home />}></Route>
+                <Route path="/Login" element={<Login />}></Route>
+                <Route path="/Register" element={<Register />}></Route>
+                <Route path="/LogOut" element={<LogOut />}></Route>
+                <Route path="/Mine/:id" element={<Mine />}></Route>
+                <Route path="/Statistika" element={<Stats />}></Route>
+                <Route path="/Rudniki" element={<MyMine />}></Route>
+                <Route path="/Profil" element={<Profile />}></Route>
+                <Route path="/Animacija" element={<Animation />}></Route>
+              </Routes>
+          </NotificationStack>
           </div>
       </UserContext.Provider>
     </BrowserRouter>
