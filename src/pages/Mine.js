@@ -108,8 +108,6 @@ function Mine() {
           status: data.status,
           type: data.type
         });
-
-        console.log(data)
       } catch (err) {
         setError(err.message);
       }

@@ -16,7 +16,6 @@ function MyMine() {
             if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             var data = await res.json();
             data = Object.values(data);
-            console.log(data)
             if(data[0] === "Prijavljeni uporabnik nima rudnikov!"){
                 setMines(Object.values({}));
             }else{
