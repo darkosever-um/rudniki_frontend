@@ -26,7 +26,6 @@ function Profile() {
                 if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const data = await res.json();
                 setUser(data);
-                console.log(data);
                 setEditFields({
                     username: data.username,
                     email: data.email,
@@ -108,7 +107,7 @@ function Profile() {
                         <strong>Email:</strong> {user.email}
                     </div>
                     <div className="mb-2">
-                        <strong>Rojen:</strong> {user.birthDate ? new Date(user.birthDate.$date).toLocaleString() : 'neznano'}
+                        <strong>Rojen:</strong> {user.birthDate ? new Date(user.birthDate.$date).toLocaleDateString() : 'neznano'}
                     </div>
                     <div className="mb-2">
                         <strong>Število rudnikov:</strong> {user.mines ? user.mines.length : 0}

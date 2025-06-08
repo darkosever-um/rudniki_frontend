@@ -17,12 +17,9 @@ function OurSearch() {
       const url = `http://localhost:8080/${encodeURIComponent(q)}`;
       const response = await axios.get(url);
 
-      console.log(`${url} - Rezultati iskanja:`, response.data);
-
       if(response.data !== "Ni takih rudnikov!"){
         const dataFromBackend = Object.values(response.data);
         setResults(dataFromBackend);
-        console.log("Rezultati iskanja:", dataFromBackend); 
       }else{
         setResults([]);
       }

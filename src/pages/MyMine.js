@@ -14,9 +14,14 @@ function MyMine() {
             try {
             const res = await fetch(`http://127.0.0.1:8080/user/mines/${id}`);
             if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-            const data = await res.json();
-            console.log('Mines fetched:', data);
-            setMines(Object.values(data));
+            var data = await res.json();
+            data = Object.values(data);
+            console.log(data)
+            if(data[0] === "Prijavljeni uporabnik nima rudnikov!"){
+                setMines(Object.values({}));
+            }else{
+                setMines(Object.values(data));
+            }
             } catch (err) {
                 setError(err.message);
             }
