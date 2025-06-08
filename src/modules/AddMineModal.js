@@ -186,7 +186,7 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
 
       <div className="flex justify-end gap-2 pt-4">
         <OurButton variant="blue" text="Naprej" onClickDo={() => setStep(2)} />
-        <OurButton onClickDo={() => { stopDrawing(); setStep(1); onClose(); }} text="Prekliči" />
+        <OurButton onClickDo={() => { stopDrawing(); setStep(1); onClose(); setMinerals([]); setInfrastructures([]); setWorkers([]); }} text="Prekliči" />
       </div>
     </div>
   );
@@ -520,7 +520,7 @@ const AddMineModal = ({ isOpen, onClose, polygonPath, stopDrawing }) => {
       <div className="flex justify-end gap-2 pt-4">
         <OurButton text="Nazaj" onClickDo={() => {setStep(1);}} />
         <OurButton variant="blue" text="Shrani" type="submit" />
-        <OurButton onClickDo={() => { stopDrawing(); setStep(1); onClose(); }} text="Prekliči" variant="red" />
+        <OurButton onClickDo={() => { stopDrawing(); setStep(1); onClose(); setMinerals([]); setInfrastructures([]); setWorkers([]); }} text="Prekliči" variant="red" />
       </div>
     </form>
   );

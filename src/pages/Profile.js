@@ -114,9 +114,6 @@ function Profile() {
                         <strong>Rojen:</strong> {user.birthDate ? new Date(user.birthDate.$date).toLocaleDateString() : 'neznano'}
                     </div>
                     <div className="mb-2">
-                        <strong>Število rudnikov:</strong> {user.mines ? user.mines.length : 0}
-                    </div>
-                    <div className="mb-2">
                         <strong>Datum registracije:</strong> {user.created ? new Date(user.created.$date).toLocaleString() : 'neznano'}
                     </div>
                     <OurButton
