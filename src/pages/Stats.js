@@ -38,7 +38,7 @@ function Stats() {
 
   const menuOptions = [
     { key: "minesByMineral", label: "Rudniki po mineralih" },
-    { key: "minesByMineralGrade", label: "Rudniki po oceni minerala" },
+    { key: "minesByMineralGrade", label: "Minerali po oceni" },
     { key: "minesByStatus", label: "Rudniki po statusu" },
     { key: "minesByType", label: "Rudniki po vrsti" },
     { key: "minesPerMunicipality", label: "Rudniki po občinah" },
@@ -80,7 +80,7 @@ function Stats() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="count" fill="#2463eb" name="Rudnikov" />
+              <Bar dataKey="count" fill="#2463eb" name="Mineralov" />
             </BarChart>
           </ResponsiveContainer>
         );

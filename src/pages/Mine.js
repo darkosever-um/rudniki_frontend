@@ -6,6 +6,8 @@ import Plus from '@mui/icons-material/Add';
 import { infrastructureStatus, mineralGrades, mineralNames, mineStatuses, mineTypes, workerTypes } from "../constants/MineEnum.js";
 import { UserContext } from '../userContext.js';
 import Clear from '@mui/icons-material/Clear';
+import AddHistory from '../modules/AddHistory.js';
+import Logs from '../modules/Logs.js'
 
 
 function Mine() {
@@ -16,6 +18,7 @@ function Mine() {
   const [editing, setEditing] = useState(false);
   const [editData, setEditData] = useState({ name: '', municipality: '', status: 0, type: 0 });
   const navigate = useNavigate();
+  const [updateLog, setUpdateLog] = useState(null);
 
   // za modal
   const [modalType, setModalType] = useState(null);
@@ -106,7 +109,8 @@ function Mine() {
         setEditData({
           name: data.name,
           status: data.status,
-          type: data.type
+          type: data.type,
+          municipality: data.municipality
         });
       } catch (err) {
         setError(err.message);
@@ -326,6 +330,14 @@ function Mine() {
       {mine.created && mine.modified && mine.created.$date !== mine.modified.$date ? (<p className='font-black text-gray-400'>Posodobljen {new Date(mine.modified.$date).toLocaleDateString()}</p>) : (<></>)}
       <p className='font-black text-gray-400'>Ustvarjen: {mine.created ? new Date(mine.created.$date).toLocaleDateString() : (mine.startYear ? mine.startYear : "Ni navedeno.")}</p>
       {mine.status === 2 && (<p className='font-black text-gray-400'>Zaprt: {mine.endYear}</p>)}
+
+      {mine.ownerId && mine && userContext.user === mine.ownerId.$oid && 
+      <>
+        <hr className='m-4'/>
+        <AddHistory minerals={mine.minerals} mineId={mine._id.$oid} setUpdateLog={setUpdateLog}/>
+        <Logs mineId={mine._id.$oid} update={updateLog}/>
+      </>
+      }
 
       <OurButton
         text="Nazaj na zemljevid"
