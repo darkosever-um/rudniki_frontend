@@ -1,12 +1,11 @@
 import OurButton from "../components/OurButton";
-import { useContext, useEffect, useState } from "react";
-import Clear from '@mui/icons-material/Clear';
-import Save from '@mui/icons-material/Save';
+import { useState } from "react";
 import { mineralNames } from "../constants/MineEnum.js";
-import { UserContext } from '../userContext';
+import { useNotification } from '../notificationContext';
 
-function AddHistory({minerals, mineId}) {
+function AddHistory({minerals, mineId, setUpdateLog}) {
   const [quantities, setQuantities] = useState([]);
+  const { addNotification } = useNotification();
 
   const handleChange = (mineral, value) => {
     setQuantities((prev) => {
@@ -33,13 +32,22 @@ function AddHistory({minerals, mineId}) {
       });
 
       if (response.ok) {
-        alert('Podatki uspešno poslani!');
+        addNotification({
+            type: 'notification',
+            title: 'Nov log',
+            text: 'Uspešno si dodal log za tekoči dan.',
+          });
+        setUpdateLog(Date.now())
       } else {
-        alert('Napaka pri pošiljanju.');
+        addNotification({
+            type: 'alert',
+            title: 'Napaka',
+            text: 'Težava pri dodajanju log-a.',
+          });
+        console.log(response)
       }
     } catch (error) {
       console.error('Napaka pri pošiljanju:', error);
-      alert('Napaka pri pošiljanju.');
     }
   };
 
@@ -63,6 +71,8 @@ function AddHistory({minerals, mineId}) {
         onClickDo={handleSubmit}
         text="Shrani"
         classNameProps="w-full"
+        variant="blue"
+        type="button"
       />
     </div>
   );

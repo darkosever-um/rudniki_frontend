@@ -18,6 +18,7 @@ function Mine() {
   const [editing, setEditing] = useState(false);
   const [editData, setEditData] = useState({ name: '', municipality: '', status: 0, type: 0 });
   const navigate = useNavigate();
+  const [updateLog, setUpdateLog] = useState(null);
 
   // za modal
   const [modalType, setModalType] = useState(null);
@@ -332,8 +333,9 @@ function Mine() {
 
       {mine.ownerId && mine && userContext.user === mine.ownerId.$oid && 
       <>
-        <AddHistory minerals={mine.minerals} mineId={mine._id.$oid}/>
-        <Logs mineId={mine._id.$oid}/>
+        <hr className='m-4'/>
+        <AddHistory minerals={mine.minerals} mineId={mine._id.$oid} setUpdateLog={setUpdateLog}/>
+        <Logs mineId={mine._id.$oid} update={updateLog}/>
       </>
       }
 
