@@ -1,0 +1,12 @@
+CommandSet = Command CommandSetPrime;
+CommandSetPrime = Command CommandSetPrime;
+CommandSetPrime = ε;
+Command = Loop;
+Command = Assign;
+Command = Print;
+
+Loop = "for" "(" Assign "to" Bitwise ")" "begin" BeginPrime "end;";
+Assign = "double" variable ":=" Assign_desno;
+Assign_desno = Bitwise ";";
+Assign_desno = FunctionCall ";";
+Print = "CONSOLE" Bitwise ";";

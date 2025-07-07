@@ -1,0 +1,197 @@
+import React, { useState, useEffect } from "react";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+
+function Stats() {
+  const [stats, setStats] = useState(null);
+  const [error, setError] = useState(null);
+  const [selectedStat, setSelectedStat] = useState("minesPerMunicipality");
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch(`http://localhost:8080/mine/statistics`);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+
+        data.minesPerYear.sort((a, b) => a.startYear - b.startYear);
+
+        setStats(data);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  const menuOptions = [
+    { key: "minesByMineral", label: "Rudniki po mineralih" },
+    { key: "minesByMineralGrade", label: "Minerali po oceni" },
+    { key: "minesByStatus", label: "Rudniki po statusu" },
+    { key: "minesByType", label: "Rudniki po vrsti" },
+    { key: "minesPerMunicipality", label: "Rudniki po občinah" },
+    { key: "minesPerYear", label: "Rudniki po letih" },
+  ];
+
+  const COLORS = ["#2463eb", "#82ca9d", "#ffc658", "#ff8042", "#00C49F", "#FFBB28", "#0088FE"];
+
+  const renderStat = () => {
+    if (!stats) return <p>Nalaganje podatkov...</p>;
+
+    switch (selectedStat) {
+      case "minesByMineral":
+        return (
+          <div className="bg-white shadow rounded-lg overflow-hidden">
+            <div className="bg-gray-100 px-4 py-2 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              Število rudnikov po mineralih
+            </div>
+            <div className="divide-y divide-gray-200">
+              {stats.minesByMineral.map((stat) => (
+                <div
+                  key={stat.mineral}
+                  className="flex items-center justify-between px-4 py-3 text-sm text-gray-800 hover:bg-gray-50 transition"
+                >
+                  <span>{stat.mineral}</span>
+                  <span className="font-medium text-gray-900">{stat.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case "minesByMineralGrade":
+        return (
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={stats.minesByMineralGrade}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="grade" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#2463eb" name="Mineralov" />
+            </BarChart>
+          </ResponsiveContainer>
+        );
+
+      case "minesByStatus":
+        return (
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={stats.minesByStatus}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="status" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#2463eb" name="Rudnikov" />
+            </BarChart>
+          </ResponsiveContainer>
+        );
+
+      case "minesByType":
+        return (
+          <ResponsiveContainer width="100%" height={400}>
+            <PieChart>
+              <Pie
+                data={stats.minesByType}
+                dataKey="count"
+                nameKey="type"
+                cx="50%"
+                cy="50%"
+                outerRadius={130}
+                label
+              >
+                {stats.minesByType.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        );
+
+      case "minesPerMunicipality":
+        return (
+          <div className="bg-white shadow rounded-lg overflow-hidden">
+            <div className="bg-gray-100 px-4 py-2 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              Število rudnikov po občinah
+            </div>
+            <div className="divide-y divide-gray-200">
+              {stats.minesPerMunicipality.map((stat) => (
+                <div
+                  key={stat.municipality}
+                  className="flex items-center justify-between px-4 py-3 text-sm text-gray-800 hover:bg-gray-50 transition"
+                >
+                  <span>{stat.municipality}</span>
+                  <span className="font-medium text-gray-900">{stat.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case "minesPerYear":
+        return (
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={stats.minesPerYear}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="startYear"  fontSize={8}/>
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#2463eb" name="Rudnikov" />
+            </BarChart>
+          </ResponsiveContainer>
+        );
+
+      default:
+        return <p>Ni podatkov za izbrano statistiko.</p>;
+    }
+  };
+
+  if (error) {
+    return <div className="p-16 text-red-600">Napaka: {error}</div>;
+  }
+
+  if (!stats) {
+    return <div className="p-16">Nalaganje podatkov...</div>;
+  }
+
+  return (
+    <div className="p-16 max-w-5xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Statistika rudnikov</h1>
+
+      <div className="mb-8 flex flex-wrap gap-2 items-center justify-center">
+        {menuOptions.map((option) => (
+          <button
+            key={option.key}
+            onClick={() => setSelectedStat(option.key)}
+            className={`px-4 py-2 rounded-3xl border ${
+              selectedStat === option.key
+                ? "bg-blue-500 text-white"
+                : "bg-white text-blue-500 border-blue-500"
+            }`}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="h-[400px]">{renderStat()}</div>
+    </div>
+  );
+}
+
+export default Stats;
